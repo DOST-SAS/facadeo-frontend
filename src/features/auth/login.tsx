@@ -1,0 +1,278 @@
+import { useEffect, useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Loader } from "lucide-react"
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form"
+
+import { loginSchema } from "@/utils/validators"
+import { useAuth } from "@/context/AuthContext"
+
+type LoginFormValues = z.infer<typeof loginSchema>
+
+const Login = () => {
+    const [showPassword, setShowPassword] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+    const { signIn, user, signInWithGoogle } = useAuth()
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (user) {
+            // Redirect based on user role
+            if (user.role === 'admin') {
+                navigate('/admin')
+            } else {
+                navigate('/artisan')
+            }
+        }
+    }, [user, navigate])
+
+    const form = useForm<LoginFormValues>({
+        resolver: zodResolver(loginSchema),
+        defaultValues: {
+            email: "",
+            password: "",
+            rememberMe: false,
+        },
+    })
+
+    const handleLogin = async (data: LoginFormValues) => {
+        setIsLoading(true)
+        try {
+            const { error } = await signIn(data.email, data.password)
+            if (error) {
+                // Map Supabase errors to French
+                const msg = error.toLowerCase()
+                if (msg.includes('invalid login credentials')) {
+                    throw new Error("Email ou mot de passe incorrect")
+                } else if (msg.includes('email not confirmed')) {
+                    throw new Error("Veuillez confirmer votre adresse e-mail avant de vous connecter")
+                } else if (msg.includes('too many requests')) {
+                    throw new Error("Trop de tentatives. Veuillez patienter un moment avant de réessayer")
+                } else if (msg.includes('user not found')) {
+                    throw new Error("Aucun compte n'est associé à cette adresse e-mail")
+                } else if (msg.includes('compte suspendu')) {
+                    throw new Error("Compte désactivé ou suspendu. Contactez le support.")
+                } else {
+                    throw new Error("Une erreur est survenue lors de la connexion. Veuillez réessayer")
+                }
+            }
+            // Navigation handled by useEffect when user state updates
+        } catch (error: any) {
+            console.error("Login failed:", error)
+            form.setError("root", {
+                message: error.message || "Une erreur est survenue lors de la connexion"
+            })
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+
+    const handleMetaLogin = () => {
+        console.log("Meta login")
+        // Meta OAuth would go here
+    }
+
+    return (
+        <div className="min-h-screen flex bg-background text-foreground">
+            {/* Left Side - Illustration */}
+            <div className="hidden lg:flex lg:w-1/3 bg-linear-to-br from-primary/5 via-background to-accent/5 items-center justify-center p-1 relative overflow-hidden">
+                {/* Background decoration */}
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-size-[50px_50px]" />
+                <div className="absolute top-[-10%] right-[-10%] w-96 h-96 rounded-full bg-primary/10 blur-3xl" />
+                <div className="absolute bottom-[-10%] left-[-10%] w-80 h-80 rounded-full bg-accent/10 blur-3xl" />
+
+                {/* Image container */}
+                <div className="relative z-10 w-full h-full flex flex-col items-center justify-center">
+                    <div className="w-full h-full rounded-sm overflow-hidden shadow-2xl border border-border/50 bg-card/50 backdrop-blur-sm">
+                        <img
+                            src="/login_illustration.png"
+                            alt="Modern construction management illustration"
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+                </div>
+            </div>
+
+
+            {/* Right Side - Login Form */}
+            <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
+                <div className="w-full max-w-md space-y-8">
+
+                    {/* Header */}
+                    <div className="text-center space-y-2">
+                        <h1 className="text-3xl font-bold text-foreground">Connexion</h1>
+                        <p className="text-sm text-muted-foreground">Accédez à votre compte</p>
+                    </div>
+
+                    {/* Login Form */}
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-6">
+                            {form.formState.errors.root && (
+                                <div className="p-3 text-sm text-red-500 bg-red-50 dark:bg-red-900/10 rounded-md">
+                                    {form.formState.errors.root.message}
+                                </div>
+                            )}
+
+                            {/* Email Input */}
+                            <FormField
+                                control={form.control}
+                                name="email"
+                                render={({ field }) => (
+                                    <FormItem className="space-y-2">
+                                        <div className="relative">
+                                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="Adresse e-mail"
+                                                    className="pl-10 h-12 bg-slate-50 border-slate-200 dark:bg-white/5 dark:border-white/10"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                        </div>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* Password Input */}
+                            <FormField
+                                control={form.control}
+                                name="password"
+                                render={({ field }) => (
+                                    <FormItem className="space-y-2">
+                                        <div className="relative">
+                                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                            <FormControl>
+                                                <Input
+                                                    type={showPassword ? "text" : "password"}
+                                                    placeholder="Mot de passe"
+                                                    className="pl-10 pr-10 h-12 bg-slate-50 border-slate-200 dark:bg-white/5 dark:border-white/10"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                            >
+                                                {showPassword ? (
+                                                    <EyeOff className="h-5 w-5" />
+                                                ) : (
+                                                    <Eye className="h-5 w-5" />
+                                                )}
+                                            </button>
+                                        </div>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* Remember Me & Forgot Password */}
+                            <div className="flex items-center justify-between">
+                                <FormField
+                                    control={form.control}
+                                    name="rememberMe"
+                                    render={({ field }) => (
+                                        <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                                            <FormControl>
+                                                <Checkbox
+                                                    checked={field.value}
+                                                    onCheckedChange={field.onChange}
+                                                />
+                                            </FormControl>
+                                            <FormLabel className="text-sm text-muted-foreground cursor-pointer font-normal">
+                                                Se souvenir de moi
+                                            </FormLabel>
+                                        </FormItem>
+                                    )}
+                                />
+                                <Link
+                                    to="/forgot-password"
+                                    className="text-sm text-primary hover:underline"
+                                >
+                                    Mot de passe oublié ?
+                                </Link>
+                            </div>
+
+                            {/* Login Button */}
+                            <Button
+                                variant="default"
+                                type="submit"
+                                disabled={isLoading}
+                                className="w-full h-12 font-semibold text-base"
+                            >
+                                {isLoading ? (
+                                    <>
+                                        <Loader className="mr-2 h-4 w-4 animate-spin" />
+                                        Connexion en cours...
+                                    </>
+                                ) : (
+                                    <>
+                                        Se connecter
+                                        <ArrowRight className="ml-2 h-5 w-5" />
+                                    </>
+                                )}
+                            </Button>
+                        </form>
+                    </Form>
+
+                    {/* Divider */}
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-border"></div>
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-background px-2 text-muted-foreground">OU</span>
+                        </div>
+                    </div>
+
+                    {/* Social Login Buttons */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={signInWithGoogle}
+                            className="h-12 border-border hover:bg-muted/50 dark:bg-card dark:hover:bg-muted/20"
+                        >
+                            <img src="/google.svg" alt="" className=" h-7 w-7" />
+                            Google
+                        </Button>
+
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={handleMetaLogin}
+                            className="h-12 border-border hover:bg-muted/50 dark:bg-card dark:hover:bg-muted/20"
+                        >
+                            <img src="/meta.png" alt="" className=" h-7 w-7" />
+                            Meta
+                        </Button>
+                    </div>
+
+                    {/* Sign Up Link */}
+                    <div className="text-center text-sm text-muted-foreground">
+                        Pas encore inscrit ?{" "}
+                        <Link to="/register" className="text-primary font-semibold hover:underline">
+                            Créer un compte
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default Login
