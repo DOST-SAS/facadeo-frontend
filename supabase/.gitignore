@@ -1,0 +1,34 @@
+# Supabase
+.branches
+.temp
+.supabase
+
+# Node
+node_modules
+
+# Build
+dist
+build
+.cache
+
+# Netlify
+.netlify
+
+# Environment
+.env
+.env.local
+.env.*.local
+.env.keys
+
+# Logs
+*.log
+
+# Plans / fichiers lourds (si tu en as)
+functions_calls.txt
+*.pdf
+*.dxf
+*.dwg
+*.log
+
+# OS
+.DS_Store
