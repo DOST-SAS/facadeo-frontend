@@ -3,10 +3,12 @@ import { corsHeaders } from "../_shared/cors.ts";
 import { requireAdmin } from "../_shared/admin.ts";
 
 serve(async (req) => {
+
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
   try {
-    if (req.method === "OPTIONS") {
-      return new Response("ok", { headers: corsHeaders });
-    }
 
     if (req.method !== "GET") {
       return new Response(JSON.stringify({ error: "Method not allowed" }), {

@@ -21,8 +21,7 @@ class PublicDevisService {
         const result = await apiRequest<any>(endpoint, {
             method: 'POST',
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${ANON_KEY}`
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 quote_id: id,
