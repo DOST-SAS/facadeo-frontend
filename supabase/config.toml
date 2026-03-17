@@ -396,7 +396,7 @@ entrypoint = "./functions/admin-fetch-plans/index.ts"
 
 [functions.admin-create-plan]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/admin-create-plan/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
