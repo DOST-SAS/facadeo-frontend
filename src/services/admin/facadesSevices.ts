@@ -32,9 +32,7 @@ class FacadesService {
         }
 
         const endpoint = `/functions/v1/admin-fetch-facades?${params.toString()}`;
-        const result = await apiRequest<Facade>(endpoint, {
-            headers: { Authorization: `Bearer ${ANON_KEY}` },
-        });
+        const result = await apiRequest<Facade>(endpoint);
 
         if ("pagination" in result) {
             return result as PaginatedResponse<Facade>;

@@ -26,9 +26,7 @@ class ScansService {
         }
 
         const endpoint = `/functions/v1/admin-fetch-scans?${params.toString()}`;
-        const result = await apiRequest<Scan>(endpoint, {
-            headers: { Authorization: `Bearer ${ANON_KEY}` },
-        });
+        const result = await apiRequest<Scan>(endpoint);
 
         if ("pagination" in result) {
             return result as PaginatedResponse<Scan>;
@@ -42,7 +40,6 @@ class ScansService {
     async deleteScan(scanId: string) {
         const endpoint = `/functions/v1/admin-delete-scan`;
         await apiRequest(endpoint, {
-            headers: { Authorization: `Bearer ${ANON_KEY}` },
             method: "POST",
             body: JSON.stringify({ scanId }),
         });

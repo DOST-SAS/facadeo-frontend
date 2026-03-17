@@ -5,9 +5,7 @@ import type { Settings } from "@/types/adminSettingsTypes";
 class SettingsService {
     async getSettings(): Promise<ApiResponse<Settings[]>> {
         const endpoint = `/functions/v1/admin-get-app-settings`;
-        const result = await apiRequest<Settings[]>(endpoint, {
-            headers: { Authorization: `Bearer ${ANON_KEY}` },
-        });
+        const result = await apiRequest<Settings[]>(endpoint);
 
         return result as ApiResponse<Settings[]>;
     }
@@ -16,7 +14,6 @@ class SettingsService {
         const endpoint = `/functions/v1/admin-update-settings`;
         const result = await apiRequest<Settings>(endpoint, {
             method: "POST",
-            headers: { Authorization: `Bearer ${ANON_KEY}` },
             body: JSON.stringify(settings),
         });
         return result as ApiResponse<Settings>;

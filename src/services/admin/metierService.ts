@@ -25,9 +25,7 @@ class MetierService {
         }
 
         const endpoint = `/functions/v1/admin-fetch-metiers?${params.toString()}`;
-        const result = await apiRequest<Metier>(endpoint, {
-            headers: { Authorization: `Bearer ${ANON_KEY}` },
-        });
+        const result = await apiRequest<Metier>(endpoint);
 
         return result as PaginatedResponse<Metier>;
     }
@@ -37,7 +35,6 @@ class MetierService {
             const endpoint = `/functions/v1/admin-create-metier`;
             const result = await apiRequest<Metier>(endpoint, {
                 method: "POST",
-                headers: { Authorization: `Bearer ${ANON_KEY}` },
                 body: JSON.stringify(metier),
             });
 
@@ -54,7 +51,6 @@ class MetierService {
             const endpoint = `/functions/v1/admin-update-metier`;
             const result = await apiRequest<Metier>(endpoint, {
                 method: "PUT",
-                headers: { Authorization: `Bearer ${ANON_KEY}` },
                 body: JSON.stringify({ m_id, metier }),
             });
 
@@ -71,7 +67,6 @@ class MetierService {
             const endpoint = `/functions/v1/admin-delete-metier`;
             const result = await apiRequest<void>(endpoint, {
                 method: "DELETE",
-                headers: { Authorization: `Bearer ${ANON_KEY}` },
                 body: JSON.stringify({ id }),
             });
 

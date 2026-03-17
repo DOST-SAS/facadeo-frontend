@@ -6,9 +6,7 @@ import type { CreditPack } from "@/types/packstypes";
 class PackService {
     async getPacks(): Promise<PaginatedResponse<CreditPack>> {
         const endpoint = `/functions/v1/admin-fetch-packs`;
-        const result = await apiRequest<CreditPack>(endpoint, {
-            headers: { Authorization: `Bearer ${ANON_KEY}` },
-        });
+        const result = await apiRequest<CreditPack>(endpoint);
         return result as PaginatedResponse<CreditPack>;
     }
 
@@ -17,7 +15,6 @@ class PackService {
             const endpoint = `/functions/v1/admin-create-packs`;
             const result = await apiRequest<CreditPack>(endpoint, {
                 method: "POST",
-                headers: { Authorization: `Bearer ${ANON_KEY}` },
                 body: JSON.stringify(pack),
             });
 
@@ -34,7 +31,6 @@ class PackService {
             const endpoint = `/functions/v1/admin-update-packs`;
             const result = await apiRequest<CreditPack>(endpoint, {
                 method: "POST",
-                headers: { Authorization: `Bearer ${ANON_KEY}` },
                 body: JSON.stringify({ p_id, pack }),
             });
 
@@ -51,7 +47,6 @@ class PackService {
             const endpoint = `/functions/v1/admin-delete-pack`;
             const result = await apiRequest<void>(endpoint, {
                 method: "POST",
-                headers: { Authorization: `Bearer ${ANON_KEY}` },
                 body: JSON.stringify({ id }),
             });
 

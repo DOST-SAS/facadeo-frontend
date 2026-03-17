@@ -25,10 +25,8 @@ class UsersService {
             }
         }
 
-        const endpoint = `/functions/v1/Admin-fetch-users?${params.toString()}`;
-        const result = await apiRequest<User>(endpoint, {
-            headers: { Authorization: `Bearer ${ANON_KEY}` },
-        });
+        const endpoint = `/functions/v1/admin-fetch-users?${params.toString()}`;
+        const result = await apiRequest<User>(endpoint);
         // console.log(result)
         if ("pagination" in result) {
             return result as PaginatedResponse<User>;
@@ -43,7 +41,6 @@ class UsersService {
         const endpoint = `/functions/v1/admin-update-user`;
         const result = await apiRequest<User>(endpoint, {
             method: "POST",
-            headers: { Authorization: `Bearer ${ANON_KEY}` },
             body: JSON.stringify({ userId, updates }),
         });
         return result.data as User;
@@ -52,7 +49,6 @@ class UsersService {
         const endpoint = `/functions/v1/admin-delete-profile`;
         const result = await apiRequest<User>(endpoint, {
             method: "POST",
-            headers: { Authorization: `Bearer ${ANON_KEY}` },
             body: JSON.stringify({ user_id: userId }),
         });
         return result.data as User;

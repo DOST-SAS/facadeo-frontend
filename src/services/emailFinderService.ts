@@ -6,7 +6,6 @@ class EmailFinderService {
         const endpoint = `/functions/v1/email-finder-apify`;
         const result = await apiRequest<{ emails: string[] }>(endpoint, {
             method: "POST",
-            headers: { Authorization: `Bearer ${ANON_KEY}` },
             body: JSON.stringify({ website })
         });
 

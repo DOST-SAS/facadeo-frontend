@@ -34,7 +34,6 @@ class CreditLedgerService {
         const endpoint = `/functions/v1/credits-consumption-total`;
         const result = await apiRequest<CreditLedgerStats>(endpoint, {
             method: "POST",
-            headers: { Authorization: `Bearer ${ANON_KEY}` },
             body: JSON.stringify({ start_date: startDate, end_date: endDate })
         });
         return result.data as CreditLedgerStats;

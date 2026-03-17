@@ -9,7 +9,6 @@ class DashboardService {
         const endpoint = `/functions/v1/admin-dashboard`;
         const result = await apiRequest<DashboardStats>(endpoint, {
             method: "POST",
-            headers: { Authorization: `Bearer ${ANON_KEY}` },
             body: JSON.stringify({ periodType })
         });
         // console.log(result.data)

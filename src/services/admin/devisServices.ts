@@ -25,9 +25,7 @@ class DevisService {
         }
 
         const endpoint = `/functions/v1/admin-fetch-devis?${params.toString()}`;
-        const result = await apiRequest<Devis>(endpoint, {
-            headers: { Authorization: `Bearer ${ANON_KEY}` },
-        });
+        const result = await apiRequest<Devis>(endpoint);
 
         if ("pagination" in result) {
             return result as PaginatedResponse<Devis>;
