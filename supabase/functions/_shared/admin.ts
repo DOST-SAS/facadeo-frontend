@@ -19,9 +19,6 @@ export async function requireAdmin(req: Request) {
 
   const token = authHeader.split(" ")[1]?.trim() || "";
 
-  console.log("AUTH HEADER:", authHeader);
-  console.log("TOKEN:", token);
-
   if (!token) {
     return {
       ok: false,
@@ -30,9 +27,15 @@ export async function requireAdmin(req: Request) {
     };
   }
 
-  const supabase = createClient(supabaseUrl, serviceRoleKey);
+  const supabase = createClient(supabaseUrl, serviceRoleKey, {
+    global: {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  });
 
-  const { data: userData, error: userError } = await supabase.auth.getUser(token);
+  const { data: userData, error: userError } = await supabase.auth.getUser();
 
   if (userError || !userData.user) {
     return {
