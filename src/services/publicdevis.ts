@@ -1,4 +1,4 @@
-import { ANON_KEY, apiRequest } from "@/api/api";
+import { apiRequest } from "@/api/api";
 import type { Devis } from "@/types/devisTypes";
 
 
@@ -10,7 +10,6 @@ class PublicDevisService {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${ANON_KEY}`
             },
             body: JSON.stringify({ quote_id: id }),
         });

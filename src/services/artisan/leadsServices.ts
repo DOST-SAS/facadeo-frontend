@@ -1,4 +1,4 @@
-import { ANON_KEY, apiRequest, supabase } from "@/api/api"
+import { apiRequest, supabase } from "@/api/api"
 
 class LeadService {
 

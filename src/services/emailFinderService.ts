@@ -1,4 +1,4 @@
-import { ANON_KEY, apiRequest } from "@/api/api";
+import { apiRequest } from "@/api/api";
 
 
 class EmailFinderService {

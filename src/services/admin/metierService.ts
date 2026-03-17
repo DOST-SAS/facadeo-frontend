@@ -1,5 +1,4 @@
-
-import { ANON_KEY, apiRequest, type PaginatedResponse } from "@/api/api";
+import { apiRequest, type PaginatedResponse } from "@/api/api";
 import type { Metier } from "@/types/artisanSettinstypes";
 
 

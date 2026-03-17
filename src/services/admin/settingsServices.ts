@@ -1,5 +1,5 @@
 
-import { ANON_KEY, apiRequest, type ApiResponse } from "@/api/api";
+import { apiRequest, type ApiResponse } from "@/api/api";
 import type { Settings } from "@/types/adminSettingsTypes";
 
 class SettingsService {

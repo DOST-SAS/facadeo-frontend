@@ -1,5 +1,5 @@
 
-import { ANON_KEY, apiRequest, type PaginatedResponse, supabase } from "@/api/api";
+import { apiRequest, type PaginatedResponse, supabase } from "@/api/api";
 import { GOOGLE_PLACE_TYPES } from "@/constants";
 import type { Facade } from "@/types/scansTypes";
 
