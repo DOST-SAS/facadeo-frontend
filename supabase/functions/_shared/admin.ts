@@ -12,8 +12,15 @@ export async function requireAdmin(req: Request) {
     };
   }
 
-  const authHeader = req.headers.get("Authorization") || "";
-  const token = authHeader.replace("Bearer ", "").trim();
+  const authHeader =
+    req.headers.get("Authorization") ||
+    req.headers.get("authorization") ||
+    "";
+
+  const token = authHeader.split(" ")[1]?.trim() || "";
+
+  console.log("AUTH HEADER:", authHeader);
+  console.log("TOKEN:", token);
 
   if (!token) {
     return {
