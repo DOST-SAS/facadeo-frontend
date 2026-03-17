@@ -53,22 +53,25 @@ export const apiRequest = async <T>(
       data: { session },
     } = await supabase.auth.getSession();
 
-    const authHeaders: Record<string, string> = {
-      "Content-Type": "application/json",
-    };
+    const headers = new Headers();
+
+    headers.set("Content-Type", "application/json");
+    headers.set("apikey", ANON_KEY);
 
     if (session?.access_token) {
-      authHeaders.Authorization = `Bearer ${session.access_token}`;
-    } else {
-      authHeaders.apikey = ANON_KEY;
+      headers.set("Authorization", `Bearer ${session.access_token}`);
+    }
+
+    if (options.headers) {
+      const customHeaders = new Headers(options.headers);
+      customHeaders.forEach((value, key) => {
+        headers.set(key, value);
+      });
     }
 
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       ...options,
-      headers: {
-        ...authHeaders,
-        ...(options.headers as Record<string, string>),
-      },
+      headers,
     });
 
     if (!response.ok) {
@@ -78,9 +81,13 @@ export const apiRequest = async <T>(
         const text = await response.text();
         if (text) {
           const errorData = JSON.parse(text);
+
           if (errorData?.error) {
             errorMessage = `API request failed: ${errorData.error}`;
+          } else if (errorData?.message) {
+            errorMessage = `API request failed: ${errorData.message}`;
           }
+
           console.error("API Error Details:", errorData);
         }
       } catch {
@@ -94,6 +101,7 @@ export const apiRequest = async <T>(
     }
 
     const text = await response.text();
+
     if (!text) {
       return { data: null as T };
     }
@@ -110,6 +118,7 @@ export const apiRequest = async <T>(
     return { data: data.data ?? data } as ApiResponse<T>;
   } catch (error) {
     console.error("API Request Error:", error);
+
     throw error instanceof ApiError
       ? error
       : new ApiError("Network error");
