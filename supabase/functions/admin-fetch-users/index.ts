@@ -29,27 +29,34 @@ serve(async (req) => {
     const url = new URL(req.url);
     const page = Number(url.searchParams.get("page") ?? "1");
     const limit = Number(url.searchParams.get("limit") ?? "10");
-    const searchterm = (url.searchParams.get("searchterm") ?? "").trim();
-    const status = (url.searchParams.get("status") ?? "all").trim();
-
     const from = (page - 1) * limit;
     const to = from + limit - 1;
+    const searchterm = (url.searchParams.get("searchterm") ?? "").trim();
+    const status = (url.searchParams.get("status") ?? "").trim();
 
     let query = supabase
       .from("profiles")
-      .select("*", { count: "exact" });
+      .select(
+        `
+        *,
+        scans:scans!scans_profile_id_fkey(id),
+        quotes:quotes!quotes_profile_id_fkey(id)
+      `,
+        { count: "exact" }
+      )
+      .eq("role", "artisan");
 
     if (searchterm) {
-      query = query.or(`email.ilike.%${searchterm}%,first_name.ilike.%${searchterm}%,last_name.ilike.%${searchterm}%`);
+      query = query.ilike("display_name", `%${searchterm}%`);
     }
 
     if (status && status !== "all") {
       query = query.eq("status", status);
     }
 
-    const { data, error, count } = await query
-      .order("created_at", { ascending: false })
-      .range(from, to);
+    query = query.range(from, to).order("display_name", { ascending: true });
+
+    const { data: users, error, count } = await query;
 
     if (error) {
       return new Response(JSON.stringify({ error: error.message }), {
@@ -58,17 +65,28 @@ serve(async (req) => {
       });
     }
 
-    const total = count ?? 0;
-    const totalPages = Math.ceil(total / limit);
+    const formattedData =
+      users?.map((u) => ({
+        id: String(u.id),
+        display_name: u.display_name,
+        email: u.email,
+        role: u.role,
+        status: u.status,
+        numberScans: u.scans?.length ?? 0,
+        numberDevis: u.quotes?.length ?? 0,
+        created_at: u.created_at?.split("T")[0] ?? "",
+        avatar: u.avatar,
+        cin: u.cin ?? "",
+      })) ?? [];
 
     return new Response(
       JSON.stringify({
-        data: data ?? [],
+        data: formattedData,
         pagination: {
           page,
           limit,
-          total,
-          totalPages,
+          total: count ?? 0,
+          totalPages: Math.ceil((count ?? 0) / limit),
         },
       }),
       {
@@ -79,7 +97,7 @@ serve(async (req) => {
   } catch (err) {
     return new Response(
       JSON.stringify({
-        error: err instanceof Error ? err.message : "Unknown error",
+        error: err instanceof Error ? err.message : "Unknown server error",
       }),
       {
         status: 500,
