@@ -470,3 +470,6 @@ verify_jwt = false
 
 [functions.admin-fetch-scans]
 verify_jwt = false
+
+[functions.admin-delete-scan]
+verify_jwt = false
