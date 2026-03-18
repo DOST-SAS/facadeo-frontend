@@ -34,27 +34,21 @@ serve(async (req) => {
       });
     }
 
-    const updates = {
-      name: plan.name,
-      slug: plan.slug,
-      monthly_credit: plan.monthly_credit,
-      price_cents: plan.price_cents,
-      currency: plan.currency,
-      features: plan.features ?? [],
-      stripe_product_id: plan.stripe_product_id ?? null,
-      stripe_price_id: plan.stripe_price_id ?? null,
-      description: plan.description ?? null,
-      active: plan.active,
-      is_public: plan.is_public,
-      sort_order: plan.sort_order ?? 0,
-      sub_features: plan.sub_features ?? null,
-      type: plan.type ?? null,
+    if (!plan || typeof plan !== "object") {
+      return new Response(JSON.stringify({ error: "plan is required" }), {
+        status: 400,
+        headers: corsHeaders,
+      });
+    }
+
+    const payload = {
+      ...plan,
       updated_at: new Date().toISOString(),
     };
 
     const { data, error } = await supabase
       .from("plans")
-      .update(updates)
+      .update(payload)
       .eq("id", planId)
       .select("*")
       .single();
