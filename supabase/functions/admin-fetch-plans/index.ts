@@ -4,7 +4,10 @@ import { requireAdmin } from "../_shared/admin.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", {
+      status: 200,
+      headers: corsHeaders,
+    });
   }
 
   try {
@@ -26,9 +29,16 @@ serve(async (req) => {
 
     const { supabase } = adminCheck;
 
+    const url = new URL(req.url);
+    const page = Number(url.searchParams.get("page") ?? "1");
+    const limit = Number(url.searchParams.get("limit") ?? "10");
+    const from = (page - 1) * limit;
+    const to = page * limit - 1;
+
     const { data, error, count } = await supabase
       .from("plans")
       .select("*", { count: "exact" })
+      .range(from, to)
       .order("sort_order", { ascending: true })
       .order("created_at", { ascending: false });
 
@@ -39,16 +49,14 @@ serve(async (req) => {
       });
     }
 
-    const items = data ?? [];
-
     return new Response(
       JSON.stringify({
-        data: items,
+        data: data ?? [],
         pagination: {
-          page: 1,
-          limit: 100,
-          total: count ?? items.length,
-          totalPages: 1,
+          page,
+          limit,
+          total: count ?? 0,
+          totalPages: Math.ceil((count ?? 0) / limit),
         },
       }),
       {
