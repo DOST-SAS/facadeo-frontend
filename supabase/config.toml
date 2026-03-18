@@ -464,3 +464,9 @@ verify_jwt = false
 
 [functions.admin-update-metier]
 verify_jwt = false
+
+[functions.admin-delete-metier]
+verify_jwt = false
+
+[functions.admin-fetch-scans]
+verify_jwt = false
