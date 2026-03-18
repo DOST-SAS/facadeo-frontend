@@ -440,3 +440,6 @@ entrypoint = "./functions/admin-fetch-users/index.ts"
 
 [functions.stripe-create-session]
 verify_jwt = false
+
+[functions.admin-fetch-packs]
+verify_jwt = false
