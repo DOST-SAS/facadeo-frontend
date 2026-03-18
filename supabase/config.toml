@@ -446,3 +446,6 @@ verify_jwt = false
 
 [functions.admin-create-packs]
 verify_jwt = false
+
+[functions.admin-update-packs]
+verify_jwt = false
