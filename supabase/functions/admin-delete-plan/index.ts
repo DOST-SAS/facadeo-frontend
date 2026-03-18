@@ -4,7 +4,10 @@ import { requireAdmin } from "../_shared/admin.ts";
 
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", {
+      status: 200,
+      headers: corsHeaders,
+    });
   }
 
   try {
@@ -26,10 +29,7 @@ serve(async (req: Request) => {
 
     const { supabase } = adminCheck;
 
-    // 🔥 récupérer le planId depuis l’URL
-    const url = new URL(req.url);
-    const pathParts = url.pathname.split("/");
-    const planId = pathParts[pathParts.length - 1];
+    const planId = req.url.split("/").pop();
 
     if (!planId) {
       return new Response(JSON.stringify({ error: "planId is required" }), {
@@ -50,13 +50,10 @@ serve(async (req: Request) => {
       });
     }
 
-    return new Response(
-      JSON.stringify({ success: true }),
-      {
-        status: 200,
-        headers: corsHeaders,
-      }
-    );
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders,
+    });
   } catch (err) {
     return new Response(
       JSON.stringify({
