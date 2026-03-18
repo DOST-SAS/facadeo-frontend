@@ -455,3 +455,6 @@ verify_jwt = false
 
 [functions.admin-dashboard]
 verify_jwt = false
+
+[functions.admin-fetch-metiers]
+verify_jwt = false
