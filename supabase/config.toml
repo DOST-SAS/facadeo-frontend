@@ -479,3 +479,6 @@ verify_jwt = false
 
 [functions.admin-fetch-devis]
 verify_jwt = false
+
+[functions.admin_fetch_notifications]
+verify_jwt = false
