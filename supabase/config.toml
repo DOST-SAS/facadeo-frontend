@@ -443,3 +443,6 @@ verify_jwt = false
 
 [functions.admin-fetch-packs]
 verify_jwt = false
+
+[functions.admin-create-packs]
+verify_jwt = false
