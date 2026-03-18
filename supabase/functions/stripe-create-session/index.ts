@@ -70,7 +70,6 @@ serve(async (req: Request) => {
 
     const isAdmin = profile.is_admin === true || profile.role === "admin";
 
-    // Sécurité : un user ne peut payer que pour lui-même, sauf admin
     if (profileId !== user.id && !isAdmin) {
       return new Response(
         JSON.stringify({ error: "Forbidden" }),
@@ -109,14 +108,38 @@ serve(async (req: Request) => {
       .select("STRIPE_SECRET_KEY")
       .single();
 
+    if (keyError || !stripeKeyRow?.STRIPE_SECRET_KEY) {
+      return new Response(
+        JSON.stringify({ error: "Stripe secret key not configured" }),
+        {
+          status: 500,
+          headers: corsHeaders,
+        }
+      );
+    }
+
+    const stripe = new Stripe(stripeKeyRow.STRIPE_SECRET_KEY, {
+      apiVersion: "2023-10-16",
+    });
+
     /* =========================
        GET / CREATE CUSTOMER
     ========================== */
-    const { data: targetProfile } = await supabase
+    const { data: targetProfile, error: profileError } = await supabase
       .from("profiles")
       .select("email")
       .eq("id", profileId)
       .single();
+
+    if (profileError) {
+      return new Response(
+        JSON.stringify({ error: profileError.message }),
+        {
+          status: 500,
+          headers: corsHeaders,
+        }
+      );
+    }
 
     let customerId: string;
 
