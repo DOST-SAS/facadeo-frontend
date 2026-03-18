@@ -476,3 +476,6 @@ verify_jwt = false
 
 [functions.admin-fetch-facades]
 verify_jwt = false
+
+[functions.admin-fetch-devis]
+verify_jwt = false
