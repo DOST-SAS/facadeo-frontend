@@ -461,3 +461,6 @@ verify_jwt = false
 
 [functions.admin-create-metier]
 verify_jwt = false
+
+[functions.admin-update-metier]
+verify_jwt = false
