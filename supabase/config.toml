@@ -504,4 +504,5 @@ verify_jwt = false
 [functions.public_set_status]
 verify_jwt = false
 
-
+[functions.unsubscribe-email]
+verify_jwt = false
