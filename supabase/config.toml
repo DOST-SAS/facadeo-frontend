@@ -524,3 +524,6 @@ verify_jwt = false
 
 [functions.notify-push]
 verify_jwt = false
+
+[functions.expired-quotes]
+verify_jwt = false
