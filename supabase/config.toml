@@ -497,3 +497,6 @@ verify_jwt = false
 
 [functions.admin-delete-profile]
 verify_jwt = false
+
+[functions.public_get_devis]
+verify_jwt = false
