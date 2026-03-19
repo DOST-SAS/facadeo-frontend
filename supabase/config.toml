@@ -509,3 +509,6 @@ verify_jwt = false
 
 [functions.email-finder-apify]
 verify_jwt = false
+
+[functions.credits-consumption-total]
+verify_jwt = false
