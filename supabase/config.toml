@@ -485,3 +485,6 @@ verify_jwt = false
 
 [functions.stripe-webhook]
 verify_jwt = false
+
+[functions.admin-get-app-settings]
+verify_jwt = false
