@@ -491,3 +491,9 @@ verify_jwt = false
 
 [functions.admin-update-settings]
 verify_jwt = false
+
+[functions.admin-update-user]
+verify_jwt = false
+
+[functions.admin-delete-profile]
+verify_jwt = false
