@@ -193,8 +193,13 @@ export default function AdminParametres() {
                                             <Input
                                                 id="scan-radius"
                                                 type="number"
-                                                value={settings.maxScanRadiusMeters}
-                                                onChange={(e) => setSettings({ ...settings, maxScanRadiusMeters: parseInt(e.target.value) })}
+                                                value={settings?.maxScanRadiusMeters ?? 0}
+                                                onChange={(e) =>
+                                                    setSettings((prev) => ({
+                                                        ...prev,
+                                                        maxScanRadiusMeters: parseInt(e.target.value || "0", 10),
+                                                    }))
+                                                }
                                             />
                                             <p className="text-xs text-muted-foreground">Limite géographique pour la génération.</p>
                                         </div>
@@ -203,8 +208,13 @@ export default function AdminParametres() {
                                             <Input
                                                 id="data-expiration"
                                                 type="number"
-                                                value={settings.extractedDataExpirationDays}
-                                                onChange={(e) => setSettings({ ...settings, extractedDataExpirationDays: parseInt(e.target.value) })}
+                                                value={settings?.extractedDataExpirationDays ?? 0}
+                                                onChange={(e) =>
+                                                    setSettings((prev) => ({
+                                                        ...prev,
+                                                        extractedDataExpirationDays: parseInt(e.target.value || "0", 10),
+                                                    }))
+                                                }
                                             />
                                             <p className="text-xs text-muted-foreground">Durée de conservation en base de données.</p>
                                         </div>
