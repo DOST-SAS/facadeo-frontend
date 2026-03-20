@@ -57,7 +57,10 @@ export default function AdminParametres() {
             try {
                 setIsLoading(true)
                 const response = await SettingsServiceInstance.getSettings()
+                console.log("SETTINGS RESPONSE =", response)
+
                 const fetchedSettings = response?.data?.[0]
+                console.log("FETCHED SETTINGS =", fetchedSettings)
 
                 if (fetchedSettings) {
                     setSettings((prev) => ({
@@ -65,7 +68,7 @@ export default function AdminParametres() {
                         ...fetchedSettings,
                     }))
                 } else {
-                    console.warn("Aucun paramètre trouvé, utilisation des valeurs par défaut.")
+                    console.warn("Aucun settings trouvé, on garde les valeurs par défaut.")
                 }
             } catch (error) {
                 console.error("Failed to fetch settings:", error)
