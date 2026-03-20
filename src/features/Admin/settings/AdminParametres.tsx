@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react"
 import toast from "react-hot-toast"
 import { Save, Bell, Globe, Coins, Mail, Euro, Shield } from "lucide-react"
@@ -58,13 +57,23 @@ export default function AdminParametres() {
             try {
                 setIsLoading(true)
                 const response = await SettingsServiceInstance.getSettings()
-                setSettings(response.data[0] as Settings)
+                const fetchedSettings = response?.data?.[0]
+
+                if (fetchedSettings) {
+                    setSettings((prev) => ({
+                        ...prev,
+                        ...fetchedSettings,
+                    }))
+                } else {
+                    console.warn("Aucun paramètre trouvé, utilisation des valeurs par défaut.")
+                }
             } catch (error) {
                 console.error("Failed to fetch settings:", error)
             } finally {
                 setIsLoading(false)
             }
         }
+
         fetchSettings()
     }, [])
 
