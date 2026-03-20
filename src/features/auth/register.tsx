@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -19,16 +19,15 @@ import {
 import { registerSchema } from "@/utils/validators"
 import { useAuth } from "@/context/AuthContext"
 
-
 type RegisterFormValues = z.infer<typeof registerSchema>
 
 const Register = () => {
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [successMessage, setSuccessMessage] = useState("")
 
     const { signUp } = useAuth()
-    const navigate = useNavigate()
 
     const form = useForm<RegisterFormValues>({
         resolver: zodResolver(registerSchema),
@@ -46,20 +45,27 @@ const Register = () => {
     const handleRegister = async (data: RegisterFormValues) => {
         try {
             setLoading(true)
+            setSuccessMessage("")
+
             const result = await signUp(data.email, data.password, {
                 first_name: data.firstName,
                 last_name: data.lastName,
                 phone: data.phone
             })
+
             if (result?.error) {
                 form.setError("root", { message: result.error })
                 return
             }
-            navigate('/verify-otp', { state: { email: data.email, phone: data.phone, name: data.firstName + " " + data.lastName } })
+
+            setSuccessMessage(
+                "Un email de confirmation vous a été envoyé. Vérifiez votre boîte mail pour activer votre compte."
+            )
+            form.reset()
         } catch (error: any) {
             console.error("Registration failed:", error)
             form.setError("root", {
-                message: error.message || "Cet email est déjà utilisé." || "Erreur lors de l'inscription"
+                message: error.message || "Erreur lors de l'inscription"
             })
         } finally {
             setLoading(false)
@@ -68,14 +74,11 @@ const Register = () => {
 
     return (
         <div className="min-h-screen flex bg-background text-foreground">
-            {/* Left Side - Illustration */}
             <div className="hidden lg:flex lg:w-1/3 bg-linear-to-br from-primary/5 via-background to-accent/5 items-center justify-center p-1 relative overflow-hidden">
-                {/* Background decoration */}
                 <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-size-[50px_50px]" />
                 <div className="absolute top-[-10%] right-[-10%] w-96 h-96 rounded-full bg-primary/10 blur-3xl" />
                 <div className="absolute bottom-[-10%] left-[-10%] w-80 h-80 rounded-full bg-accent/10 blur-3xl" />
 
-                {/* Image container */}
                 <div className="relative z-10 w-full h-full flex flex-col items-center justify-center">
                     <div className="w-full h-full rounded-sm overflow-hidden shadow-2xl border border-border/50 bg-card/50 backdrop-blur-sm">
                         <img
@@ -87,10 +90,8 @@ const Register = () => {
                 </div>
             </div>
 
-            {/* Right Side - Registration Form */}
             <div className="flex-1 flex items-center justify-center p-6 lg:p-10">
                 <div className="w-2/3 space-y-8">
-                    {/* Header */}
                     <div className="text-center space-y-2">
                         <h1 className="text-3xl font-bold text-foreground">Créez votre compte</h1>
                         <p className="text-sm text-muted-foreground">
@@ -98,7 +99,12 @@ const Register = () => {
                         </p>
                     </div>
 
-                    {/* Registration Form */}
+                    {successMessage && (
+                        <div className="p-3 text-sm text-green-600 bg-green-50 dark:bg-green-900/10 rounded-md">
+                            {successMessage}
+                        </div>
+                    )}
+
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(handleRegister)} className="space-y-4">
                             {form.formState.errors.root && (
@@ -106,7 +112,7 @@ const Register = () => {
                                     {form.formState.errors.root.message}
                                 </div>
                             )}
-                            {/* Name Fields - Two Columns */}
+
                             <div className="grid grid-cols-2 gap-2">
                                 <FormField
                                     control={form.control}
@@ -148,8 +154,8 @@ const Register = () => {
                                     )}
                                 />
                             </div>
+
                             <div className="flex gap-2">
-                                {/* Email Input */}
                                 <div className="grow">
                                     <FormField
                                         control={form.control}
@@ -173,7 +179,6 @@ const Register = () => {
                                     />
                                 </div>
 
-                                {/* Phone Input */}
                                 <div className="grow">
                                     <FormField
                                         control={form.control}
@@ -194,7 +199,6 @@ const Register = () => {
                                                             value={field.value?.startsWith("+33") ? field.value.slice(3) : field.value}
                                                             onChange={(e) => {
                                                                 const val = e.target.value.replace(/^0/, "")
-                                                                // Only update if we have digits or empty (to allow clearing)
                                                                 field.onChange(val ? `+33${val}` : "")
                                                             }}
                                                         />
@@ -207,7 +211,6 @@ const Register = () => {
                                 </div>
                             </div>
 
-                            {/* Password Input */}
                             <FormField
                                 control={form.control}
                                 name="password"
@@ -240,7 +243,6 @@ const Register = () => {
                                 )}
                             />
 
-                            {/* Confirm Password Input */}
                             <FormField
                                 control={form.control}
                                 name="confirmPassword"
@@ -273,12 +275,11 @@ const Register = () => {
                                 )}
                             />
 
-                            {/* Terms and Conditions */}
                             <FormField
                                 control={form.control}
                                 name="acceptTerms"
                                 render={({ field }) => (
-                                    <FormItem className="flex flex-col  space-x-2 space-y-0">
+                                    <FormItem className="flex flex-col space-x-2 space-y-0">
                                         <div className="flex items-center gap-2">
                                             <FormControl>
                                                 <Checkbox
@@ -288,18 +289,16 @@ const Register = () => {
                                             </FormControl>
                                             <FormLabel className="text-sm text-muted-foreground cursor-pointer font-normal">
                                                 J'accepte les
-                                                <Link to="/terms" className="text-primary underline text-xs hover:underline">Conditions d'utilisation</Link>
+                                                <Link to="/terms" className="text-primary underline text-xs hover:underline"> Conditions d'utilisation</Link>
                                                 et
-                                                <Link to="/privacy" className="text-primary underline text-xs hover:underline">Politique de confidentialité.</Link>
+                                                <Link to="/privacy" className="text-primary underline text-xs hover:underline"> Politique de confidentialité.</Link>
                                             </FormLabel>
-
                                         </div>
-                                        <FormMessage className="ml-0! block" /> {/* Force margin left 0 for error message below */}
+                                        <FormMessage className="ml-0! block" />
                                     </FormItem>
                                 )}
                             />
 
-                            {/* Register Button */}
                             <Button
                                 disabled={loading}
                                 variant="default"
@@ -309,7 +308,7 @@ const Register = () => {
                                 {loading ? (
                                     <>
                                         <Loader className="mr-2 h-4 w-4 animate-spin" />
-                                        Créer un compte
+                                        Création du compte...
                                     </>
                                 ) : (
                                     "Créer un compte"
@@ -318,7 +317,6 @@ const Register = () => {
                         </form>
                     </Form>
 
-                    {/* Login Link */}
                     <div className="text-center text-sm text-muted-foreground">
                         Vous avez déjà un compte ?{" "}
                         <Link to="/" className="text-primary font-semibold hover:underline">
