@@ -75,6 +75,22 @@ export const apiRequest = async <T>(
     });
 
     if (!response.ok) {
+      if (response.status === 401) {
+        console.warn("Session expirée ou invalide → déconnexion automatique");
+
+        try {
+          await supabase.auth.signOut();
+        } catch (error) {
+          console.warn("SignOut warning after 401:", error);
+        } finally {
+          localStorage.clear();
+          sessionStorage.clear();
+          window.location.href = "/";
+        }
+
+        throw new ApiError("Unauthorized", 401);
+      }
+
       let errorMessage = `API request failed: ${response.statusText}`;
 
       try {
