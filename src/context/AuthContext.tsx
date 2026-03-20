@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import type { User } from "@/types/usersTypes";
@@ -253,26 +252,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
 
  const signOut = async () => {
-  setLoading(true);
-  try {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-
-    setUser(null);
-    setSession(null);
-
-    // optional: force clear localStorage key of Supabase session
-    localStorage.removeItem("sb:token");
-
-    // redirect بعد ما كلشي يصفى
-    window.location.href = "/";
-  } catch (error) {
-    console.error("Logout error:", error);
-  } finally {
-    setLoading(false);
-  }
-};
-
+   setLoading(true);
+   try {
+     const { error } = await supabase.auth.signOut();
+     if (error) {
+       console.warn("Logout warning:", error.message);
+     }
+   } catch (error) {
+     console.error("Logout error:", error);
+   } finally {
+     setUser(null);
+     setSession(null);
+     localStorage.clear();
+     sessionStorage.clear();
+     window.location.href = "/";
+     setLoading(false);
+   }
+ };
 
 
   const changePassword = async (
