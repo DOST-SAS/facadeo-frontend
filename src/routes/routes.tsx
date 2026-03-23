@@ -10,6 +10,7 @@ import { ResultScan } from "@/features/Artisan/scans/ResultScan";
 import ArtisanSettings from "@/features/Artisan/settings/ArtisanSettings";
 import SubscriptionSuccess from "@/features/Artisan/abonnement/SubscriptionSuccess";
 import Login from "@/features/auth/login";
+import Landing from "@/features/auth/landing";
 import Register from "@/features/auth/register";
 import EmailVerification from "@/pages/EmailVerification";
 import NotFound from "@/pages/NotFound";
@@ -87,7 +88,8 @@ export const router = createBrowserRouter([
   },
 
   // Auth routes (public)
-  { path: "/", element: <Login /> },
+  { path: "/", element: <Landing /> },
+  { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/reset-password", element: <ResetPassword /> },
