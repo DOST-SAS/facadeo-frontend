@@ -87,7 +87,8 @@ export const router = createBrowserRouter([
   },
 
   // Auth routes (public)
-  { path: "/", element: <Login /> },
+  { path: "/", element: <Home /> },
+  { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/reset-password", element: <ResetPassword /> },
