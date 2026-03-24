@@ -527,3 +527,6 @@ verify_jwt = false
 
 [functions.expired-quotes]
 verify_jwt = false
+
+[functions.send-contact-email]
+verify_jwt = false

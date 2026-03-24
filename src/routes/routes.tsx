@@ -31,6 +31,7 @@ import AdminMetiers from "@/features/Admin/metiers/AdminMetiers";
 import Terms from "@/components/Terms";
 import Privacy from "@/components/Privacy";
 import LegalNotice from "@/components/LegalNotice";
+import Contact from "@/components/Contact";
 import DownloadPdfButton from "@/components/downladPdfButoon";
 import AboutUs from "@/pages/AboutUs";
 import Home from "@/pages/Home";
@@ -93,6 +94,7 @@ export const router = createBrowserRouter([
   { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
   { path: "/enterprise", element: <AboutUs /> },
+  { path: "/contact", element: <Contact /> },
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/reset-password", element: <ResetPassword /> },
   { path: "/verify-otp", element: <EmailVerification /> },
