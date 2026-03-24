@@ -32,6 +32,7 @@ import Terms from "@/components/Terms";
 import Privacy from "@/components/Privacy";
 import LegalNotice from "@/components/LegalNotice";
 import DownloadPdfButton from "@/components/downladPdfButoon";
+import AboutUs from "@/pages/AboutUs";
 import Home from "@/pages/Home";
 import ArtisanLeads from "@/features/Artisan/leads/ArtisanLeads";
 import { EditDevis } from "@/features/Artisan/devis/EditDevis";
@@ -91,6 +92,7 @@ export const router = createBrowserRouter([
   { path: "/", element: <Home /> },
   { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
+  { path: "/enterprise", element: <AboutUs /> },
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/reset-password", element: <ResetPassword /> },
   { path: "/verify-otp", element: <EmailVerification /> },

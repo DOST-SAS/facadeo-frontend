@@ -674,13 +674,13 @@ const Footer = () => (
             <div>
                 <h4 className="font-bold mb-4 text-white">Produit</h4>
                 <ul className="space-y-2 text-slate-500">
-                    <li><Link to="#" className="hover:text-primary">Fonctionnalités</Link></li>
-                    <li><Link to="#" className="hover:text-primary">Tarifs</Link></li>
-                    <li><Link to="#" className="hover:text-primary">Enterprise</Link></li>
+                    <li><Link to="#features" className="hover:text-primary">Fonctionnalités</Link></li>
+                    <li><Link to="#pricing" className="hover:text-primary">Tarifs</Link></li>
+                    <li><Link to="/enterprise" className="hover:text-primary">Enterprise</Link></li>
                 </ul>
             </div>
 
-            <div>
+            <div className="hidden">
                 <h4 className="font-bold mb-4 text-white">Ressources</h4>
                 <ul className="space-y-2 text-slate-500">
                     <li><Link to="#" className="hover:text-primary">Documentation</Link></li>
@@ -696,6 +696,19 @@ const Footer = () => (
                     <li><Link to="/privacy" className="hover:text-primary">Confidentialité</Link></li>
                     <li><Link to="/terms" className="hover:text-primary">CGU</Link></li>
                 </ul>
+            </div>
+            <div>
+                <div className="flex gap-4">
+                    <a href="https://www.linkedin.com/company/facadeo" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="hover:text-primary text-slate-400 hover:scale-110 transition">
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="M19 3A2 2 0 0 1 21 5v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14Zm-9.5 7.25H7V17h2.5v-6.75ZM8.25 6.75a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm7.25 3.5c-1.1 0-1.75.6-2.06 1.13V10.25H11V17h2.5v-3.25c0-.87.63-1.5 1.5-1.5s1.5.63 1.5 1.5V17H19v-3.5c0-2.07-1.43-3.25-3.25-3.25Z"/></svg>
+                    </a>
+                    <a href="https://www.facebook.com/facadeo" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:text-primary text-slate-400 hover:scale-110 transition">
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="M22 12a10 10 0 1 0-11.5 9.95v-7.05H8v-2.9h2.5V9.5c0-2.47 1.48-3.84 3.74-3.84 1.08 0 2.22.19 2.22.19v2.44h-1.25c-1.23 0-1.61.77-1.61 1.56v1.87h2.74l-.44 2.9h-2.3v7.05A10 10 0 0 0 22 12Z"/></svg>
+                    </a>
+                    <a href="https://www.instagram.com/facadeo" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-primary text-slate-400 hover:scale-110 transition">
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="5" fill="none" stroke="currentColor" strokeWidth="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" strokeWidth="2"/><circle cx="17" cy="7" r="1.5" fill="currentColor"/></svg>
+                    </a>
+                </div>
             </div>
         </div>
         <div className="container px-4 md:px-6 mx-auto mt-12 pt-8 border-t border-white/5 text-center text-slate-600">
