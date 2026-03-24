@@ -30,6 +30,7 @@ import ArtisanDetailDevis from "@/features/Artisan/devis/ArtisanDetailDevis";
 import AdminMetiers from "@/features/Admin/metiers/AdminMetiers";
 import Terms from "@/components/Terms";
 import Privacy from "@/components/Privacy";
+import LegalNotice from "@/components/LegalNotice";
 import DownloadPdfButton from "@/components/downladPdfButoon";
 import Home from "@/pages/Home";
 import ArtisanLeads from "@/features/Artisan/leads/ArtisanLeads";
@@ -94,6 +95,7 @@ export const router = createBrowserRouter([
   { path: "/reset-password", element: <ResetPassword /> },
   { path: "/verify-otp", element: <EmailVerification /> },
   { path: "/auth/callback", element: <AuthCallback /> },
+  { path: "/legal-notice", element: <LegalNotice /> },
   { path: "/privacy", element: <Privacy /> },
   { path: "/terms", element: <Terms /> },
   { path: "/billing/success", element: <SubscriptionSuccess /> },

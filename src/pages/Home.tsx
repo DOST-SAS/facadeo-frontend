@@ -692,7 +692,7 @@ const Footer = () => (
             <div>
                 <h4 className="font-bold mb-4 text-white">Légal</h4>
                 <ul className="space-y-2 text-slate-500">
-                    <li><Link to="/legal" className="hover:text-primary">Mentions légales</Link></li>
+                    <li><Link to="/legal-notice" className="hover:text-primary">Mentions légales</Link></li>
                     <li><Link to="/privacy" className="hover:text-primary">Confidentialité</Link></li>
                     <li><Link to="/terms" className="hover:text-primary">CGU</Link></li>
                 </ul>

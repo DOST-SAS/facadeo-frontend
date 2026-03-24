@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Shield, Lock, Eye, Database, UserCheck, Mail, FileText, AlertCircle, CheckCircle } from "lucide-react"
+import { Shield, Lock, Eye, Database, UserCheck, Mail, FileText, AlertCircle, CheckCircle, ArrowLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const Privacy = () => {
@@ -141,6 +141,15 @@ const Privacy = () => {
 
   return (
     <div className="relative min-h-screen bg-card md:bg-background overflow-hidden">
+      <div className="flex items-start gap-4 mt-6 ml-4">
+        <a
+          href="/"
+          className="inline-flex items-center gap-2 rounded-full px-4 py-2 bg-white/80 dark:bg-white/10 border border-slate-200 dark:border-white/10 shadow hover:bg-slate-50 dark:hover:bg-white/20 transition-colors text-primary font-semibold"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span className="hidden sm:inline">Retour à l'accueil</span>
+        </a>
+      </div>
       {/* Background Effects - Same as ArtisanAbonnement */}
       <div className="absolute inset-0 pointer-events-none h-full">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(0,180,200,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,180,200,0.03)_1px,transparent_1px)] bg-size-[50px_50px]" />
