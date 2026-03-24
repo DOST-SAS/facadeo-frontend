@@ -132,54 +132,76 @@ const HeroSection = () => {
 
     return (
         <section className="relative h-screen pt-20 pb-10 md:pt-32 md:pb-32 overflow-hidden bg-transparent">
-            {/* Dynamic Background Grid */}
-            <div className="absolute inset-x-0 top-0 bottom-0 z-0 pointer-events-none overflow-hidden h-full w-full">
-                <Threads
-                    amplitude={1}
-                    distance={0.5}
-                    enableMouseInteraction={false}
+          <div className="absolute inset-x-0 top-0 bottom-0 z-0 pointer-events-none overflow-hidden h-full w-full">
+            <Threads
+              amplitude={1}
+              distance={0.5}
+              enableMouseInteraction={false}
+            />
+          </div>
 
-                />
-            </div>
+          <div className="absolute left-1/2 top-1/2 z-10 w-full -translate-x-1/2 -translate-y-1/2 px-4 md:px-6">
+            <div className="mx-auto flex max-w-6xl flex-col items-center text-center uppercase">
+              <h1
+                className="text-4xl md:text-[3.43rem] font-bold leading-tight md:leading-[1.1] tracking-tight mb-4 max-w-3xl md:max-w-4xl text-slate-900 dark:text-white"
+              >
+                On vous trouve des chantiers.
+                <br />
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-400 to-accent">
+                  Vous envoyez le devis.
+                </span>
+              </h1>
 
-            <div className="w-full h-fit uppercase  absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2  px-4 md:px-6 mx-auto flex flex-col items-center text-center z-10">
-                <h1
-                    className="text-5xl md:text-7xl font-bold tracking-tight mb-4 max-w-5xl text-slate-900 dark:text-white"
-                    data-aos="fade-up"
-                    data-aos-delay="100"
-                    data-aos-offset="-200"
-                >
-                    Recevez des chantiers de façade.<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-400 to-accent">Sans démarcher.</span>
-                </h1> 
-                <p
-                    className="text-sm md:text-md text-slate-600 dark:text-slate-400 max-w-2xl mb-10 leading-relaxed"
-                    data-aos="fade-up"
-                    data-aos-delay="200"
-                    data-aos-offset="-200"
-                >
-                    <strong>FAÇADEO</strong> détecte automatiquement les chantiers de façades et de ravalement autour de vous et vous permet d'envoyer des devis en quelques minutes.
-                </p> 
+              <div className="mt-6 max-w-2xl space-y-1.5">
+                <p className="text-[0.8rem] md:text-[0.9rem] text-slate-600 dark:text-slate-400 leading-snug">
+                  Façade, peinture, ITE, menuiserie… Des chantiers adaptés à votre métier, autour de vous.
+                </p>
+                <p className="text-[0.72rem] md:text-[0.82rem] text-slate-500 dark:text-slate-400 leading-snug">
+                  Envoyez plusieurs devis pour augmenter vos chances de signer.
+                </p>
+              </div>
+              <div
+                className="mt-8 flex flex-col items-center gap-3"
+                data-aos="fade-up"
+                data-aos-delay="300"
+                data-aos-offset="-200"
+              >
+                <div className="flex flex-col items-center gap-4 sm:flex-row">
+                  <Link to="/register">
+                    <Button
+                      size="lg"
+                      className="h-12 rounded-full bg-primary px-8 text-base transition-all hover:scale-105 hover:bg-primary/90 shadow-[0_0_30px_-10px_var(--color-primary)]"
+                    >
+                      Voir mes chantiers
+                    </Button>
+                  </Link>
 
-                <div
-                    className="flex flex-col sm:flex-row items-center gap-4"
-                    data-aos="fade-up"
-                    data-aos-delay="300"
-                    data-aos-offset="-200"
-                >
-                    <Link to="/register">
-                        <Button size="lg" className="h-12 px-8 rounded-full text-base bg-primary hover:bg-primary/90 shadow-[0_0_30px_-10px_var(--color-primary)] transition-all hover:scale-105">
-                            Recevoir des chantiers
-                        </Button>
-                    </Link>
-                    <Link to="/demo">
-                        <Button variant="outline" size="lg" className="h-12 px-8 rounded-full text-base border-slate-500 dark:border-white/10 bg-white hover:bg-white/10 backdrop-blur-sm text-slate-600 dark:text-slate-300 dark:hover:text-white transition-all">
-                            <Play className="w-4 h-4 mr-2" />
-                            Voir Démo
-                        </Button>
-                    </Link>
+                  <Link to="/demo">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="h-12 rounded-full border-slate-500 bg-white px-8 text-base text-slate-600 transition-all hover:bg-white/10 dark:border-white/10 dark:text-slate-300 dark:hover:text-white"
+                    >
+                      <Play className="mr-2 h-4 w-4" />
+                      Voir comment ça marche
+                    </Button>
+                  </Link>
                 </div>
 
+                <div className="mt-4 text-[0.78rem] md:text-sm text-slate-600 dark:text-slate-400 text-center space-y-1">
+                  <p>
+                    <span className="font-semibold text-slate-900 dark:text-white">
+                      60 chantiers détectés en 24h
+                    </span>
+                    <span> • lors de nos tests</span>
+                  </p>
+                  <p className="text-slate-500 dark:text-slate-400">
+                    7 jours gratuits • Sans engagement
+                  </p>
+                </div>
+              </div>
             </div>
+          </div>
         </section>
     )
 }
@@ -205,9 +227,9 @@ const FeaturesBento = () => {
             <div className="container px-4 md:px-6 mx-auto">
                 <div className="text-center mb-24" data-aos="fade-up">
                     <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                        Remplissez votre planning
+                        Recevez des chantiers 
                         <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">sans prospection.</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">adaptés à votre métier.</span>
                     </h2>
                     <p className="text-slate-400 max-w-2xl mx-auto text-md">
                         <strong>FAÇADEO</strong> scanne votre secteur, identifie les façades qui ont besoin de rénovation et crée automatiquement des devis personnalisés avec simulations.
@@ -340,7 +362,7 @@ const FeaturesBento = () => {
                                 <Brain className="w-3.5 h-3.5" />
                                 Intelligence Artificielle
                             </div>
-                            <h3 className="text-4xl font-bold leading-tight">Identifiez les chantiers façade à fort potentiel en quelques minutes.</h3>
+                            <h3 className="text-4xl font-bold leading-tight">On repère les bâtiments à rénover pour vous.</h3>
                             <p className="text-lg text-slate-500 dark:text-slate-400 leading-relaxed">
                                 Notre IA analyse instantanément l'état des façades et détecte les opportunités de rénovation dans votre secteur.
                             </p>
@@ -364,7 +386,7 @@ const FeaturesBento = () => {
                                 <FileText className="w-3.5 h-3.5" />
                                 Devis Automatisés
                             </div>
-                            <h3 className="text-4xl font-bold leading-tight">Générez des devis façade professionnels en quelques clics.</h3>
+                            <h3 className="text-4xl font-bold leading-tight">Générez des devis professionnels en quelques clics.</h3>
                             <p className="text-lg text-slate-500 dark:text-slate-400 leading-relaxed">
                                 impressionnez vos prospects et signez plus vite.
                             </p>
@@ -445,7 +467,7 @@ const HowItWorks = () => {
             <div className="container px-4 md:px-6 mx-auto">
                 <div className="text-center mb-16" data-aos="fade-up">
                     <h2 className="text-3xl md:text-5xl font-bold mb-4">Comment ça marche ?</h2>
-                    <p className="text-slate-400 max-w-2xl mx-auto text-lg">Du scan au devis en moins de 5 minutes.</p>
+                    <p className="text-slate-400 max-w-2xl mx-auto text-lg">Choisissez votre métier. On vous trouve des chantiers à fort potentiel. Vous envoyez vos devis.</p>
                 </div>
 
                 <div className="grid md:grid-cols-5 gap-5 relative">
