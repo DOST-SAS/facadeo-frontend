@@ -73,18 +73,15 @@ const Contact = () => {
     setSubmitted(false);
 
     try {
-      const { data, error } = await supabase.functions.invoke(
-        "send-contact-email",
-        {
-          body: {
-            email: form.email.trim(),
-            subject: form.subject.trim(),
-            message: form.message.trim(),
-            website: form.website,
-            startedAt,
-          },
-        }
-      );
+      const { data, error } = await supabase.functions.invoke("send-contact-email", {
+        body: {
+          email: form.email.trim(),
+          subject: form.subject.trim(),
+          message: form.message.trim(),
+          website: form.website,
+          startedAt,
+        },
+      });
 
       if (error) {
         throw new Error(error.message || "Erreur lors de l'envoi.");

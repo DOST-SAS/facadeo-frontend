@@ -1,3 +1,8 @@
+// TODO: add this to supabase secrets
+// supabase secrets set BREVO_API_KEY=your_brevo_api_key
+// supabase secrets set BREVO_SENDER_EMAIL=contact@dost.pro
+// supabase secrets set BREVO_SENDER_NAME="DOST Contact"
+
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 
@@ -26,6 +31,7 @@ serve(async (req) => {
     const body = await req.json();
     const { email, subject, message, website, startedAt } = body ?? {};
 
+    // Honeypot
     if (website) {
       return jsonResponse({ success: true }, 200);
     }
@@ -75,23 +81,43 @@ serve(async (req) => {
       return jsonResponse({ error: "Soumission trop rapide" }, 400);
     }
 
-    const resendApiKey = Deno.env.get("RESEND_API_KEY");
-    if (!resendApiKey) {
-      return jsonResponse({ error: "Missing RESEND_API_KEY" }, 500);
+    const brevoApiKey = Deno.env.get("BREVO_API_KEY");
+    const senderEmail = Deno.env.get("BREVO_SENDER_EMAIL");
+    const senderName = Deno.env.get("BREVO_SENDER_NAME") || "DOST Contact";
+
+    if (!brevoApiKey) {
+      console.error("Missing BREVO_API_KEY");
+      return jsonResponse({ error: "Missing BREVO_API_KEY" }, 500);
     }
 
-    const resendRes = await fetch("https://api.resend.com/emails", {
+    if (!senderEmail) {
+      console.error("Missing BREVO_SENDER_EMAIL");
+      return jsonResponse({ error: "Missing BREVO_SENDER_EMAIL" }, 500);
+    }
+
+    const brevoRes = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${resendApiKey}`,
+        "api-key": brevoApiKey,
         "Content-Type": "application/json",
+        "Accept": "application/json",
       },
       body: JSON.stringify({
-        from: "DOST Contact <onboarding@resend.dev>",
-        to: ["huda@dost.pro"],
-        reply_to: cleanEmail,
+        sender: {
+          name: senderName,
+          email: senderEmail,
+        },
+        to: [
+          {
+            email: "contact@dost.pro",
+            name: "DOST Contact",
+          },
+        ],
+        replyTo: {
+          email: cleanEmail,
+        },
         subject: `[Contact DOST] ${cleanSubject}`,
-        text: [
+        textContent: [
           "Nouveau message depuis le formulaire de contact",
           "",
           `Email: ${cleanEmail}`,
@@ -103,15 +129,29 @@ serve(async (req) => {
       }),
     });
 
-    const resendData = await resendRes.json();
+    const brevoText = await brevoRes.text();
+    console.log("Brevo status:", brevoRes.status);
+    console.log("Brevo raw response:", brevoText);
 
-    if (!resendRes.ok) {
+    let brevoData: Record<string, unknown> = {};
+    try {
+      brevoData = brevoText ? JSON.parse(brevoText) : {};
+    } catch {
+      brevoData = { raw: brevoText };
+    }
+
+    if (!brevoRes.ok) {
+      const providerError =
+        (brevoData?.message as string) ||
+        (brevoData?.code as string) ||
+        "Failed to send email";
+
+      console.error("Brevo error:", brevoData);
+
       return jsonResponse(
         {
-          error:
-            resendData?.message ||
-            resendData?.error ||
-            "Failed to send email",
+          error: providerError,
+          provider: brevoData,
         },
         500
       );
@@ -119,10 +159,15 @@ serve(async (req) => {
 
     return jsonResponse({
       success: true,
-      emailId: resendData?.id ?? null,
+      messageId: brevoData?.messageId ?? null,
     });
   } catch (error) {
     console.error("send-contact-email error:", error);
-    return jsonResponse({ error: "Invalid body" }, 400);
+    return jsonResponse(
+      {
+        error: error instanceof Error ? error.message : "Invalid body",
+      },
+      400
+    );
   }
 });
