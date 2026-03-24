@@ -149,17 +149,16 @@ const HeroSection = () => {
                     data-aos-delay="100"
                     data-aos-offset="-200"
                 >
-                    Trouvez vos prochains <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-400 to-accent">chantiers en 5 minutes</span>
-                </h1>
-
+                    Recevez des chantiers de façade.<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-400 to-accent">Sans démarcher.</span>
+                </h1> 
                 <p
                     className="text-sm md:text-md text-slate-600 dark:text-slate-400 max-w-2xl mb-10 leading-relaxed"
                     data-aos="fade-up"
                     data-aos-delay="200"
                     data-aos-offset="-200"
                 >
-                    L'IA détecte pour vous les façades à rénover dans votre zone, génère les devis avec simulation avant/après et vous aide à signer 3x plus de contrats.
-                </p>
+                    <strong>FAÇADEO</strong> détecte automatiquement les chantiers de façades et de ravalement autour de vous et vous permet d'envoyer des devis en quelques minutes.
+                </p> 
 
                 <div
                     className="flex flex-col sm:flex-row items-center gap-4"
@@ -169,7 +168,7 @@ const HeroSection = () => {
                 >
                     <Link to="/register">
                         <Button size="lg" className="h-12 px-8 rounded-full text-base bg-primary hover:bg-primary/90 shadow-[0_0_30px_-10px_var(--color-primary)] transition-all hover:scale-105">
-                            Commencer gratuitement
+                            Recevoir des chantiers
                         </Button>
                     </Link>
                     <Link to="/demo">
@@ -206,12 +205,12 @@ const FeaturesBento = () => {
             <div className="container px-4 md:px-6 mx-auto">
                 <div className="text-center mb-24" data-aos="fade-up">
                     <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                        Arrêtez de chercher des clients.
+                        Remplissez votre planning
                         <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Laissez-les venir à vous.</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">sans prospection.</span>
                     </h2>
                     <p className="text-slate-400 max-w-2xl mx-auto text-md">
-                        FAÇADEO scanne votre secteur, identifie les façades qui ont besoin de rénovation et crée automatiquement des devis personnalisés avec simulations.
+                        <strong>FAÇADEO</strong> scanne votre secteur, identifie les façades qui ont besoin de rénovation et crée automatiquement des devis personnalisés avec simulations.
                     </p>
                 </div>
 
@@ -341,7 +340,7 @@ const FeaturesBento = () => {
                                 <Brain className="w-3.5 h-3.5" />
                                 Intelligence Artificielle
                             </div>
-                            <h3 className="text-4xl font-bold leading-tight">Une IA qui travaille comme votre œil d'expert</h3>
+                            <h3 className="text-4xl font-bold leading-tight">Identifiez les chantiers façade à fort potentiel en quelques minutes.</h3>
                             <p className="text-lg text-slate-500 dark:text-slate-400 leading-relaxed">
                                 Notre IA analyse instantanément l'état des façades et détecte les opportunités de rénovation dans votre secteur.
                             </p>
@@ -365,9 +364,9 @@ const FeaturesBento = () => {
                                 <FileText className="w-3.5 h-3.5" />
                                 Devis Automatisés
                             </div>
-                            <h3 className="text-4xl font-bold leading-tight">Des devis qui vendent vos services</h3>
+                            <h3 className="text-4xl font-bold leading-tight">Générez des devis façade professionnels en quelques clics.</h3>
                             <p className="text-lg text-slate-500 dark:text-slate-400 leading-relaxed">
-                                Finies les heures passées sur Excel. Générez des devis professionnels avec simulations visuelles en quelques clics.
+                                impressionnez vos prospects et signez plus vite.
                             </p>
                             <ul className="space-y-4">
                                 {['Calcul automatique des surfaces', 'Photos de simulation avant/après', 'Intégration de vos propres tarifs'].map((item, i) => (
@@ -410,7 +409,7 @@ const FeaturesBento = () => {
                                 <TrendingUp className="w-3.5 h-3.5" />
                                 Performance & CRM
                             </div>
-                            <h3 className="text-4xl font-bold leading-tight">Suivez vos performances comme un chef d'entreprise</h3>
+                            <h3 className="text-4xl font-bold leading-tight">Suivez vos résultats et identifiez les meilleures opportunités.</h3>
                             <p className="text-lg text-slate-500 dark:text-slate-400 leading-relaxed">
                                 Un tableau de bord complet pour piloter votre activité, suivre vos devis signés et optimiser votre taux de conversion.
                             </p>
@@ -512,7 +511,7 @@ const PricingSection = () => {
                         Tarification <span className="text-primary dark:text-white">Simple</span>
                     </h2>
                     <p className="text-slate-500 dark:text-slate-400 max-w-xl mx-auto text-lg">
-                        Une tarification adaptée à votre croissance. Changez de plan à tout moment.
+                       Essai gratuit (7 jours), sans engagement, rentabilisé dès le 1er chantier signé.
                     </p>
                 </div>
 
@@ -641,8 +640,8 @@ const CTASection = () => (
         <div className="absolute inset-0 bg-primary/10" />
 
         <div className="container px-4 md:px-6 mx-auto relative z-10 text-center" data-aos="zoom-in">
-            <h2 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">Prêt à arrêter de perdre du temps en prospection ?</h2>
-            <p className="text-xl text-slate-400 max-w-2xl mx-auto mb-10">Rejoignez les façadiers qui signent plus de chantiers en perdant moins de temps.</p>
+            <h2 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">Prêt à remplir votre carnet de commandes ?</h2>
+            <p className="text-xl text-slate-400 max-w-2xl mx-auto mb-10">Rejoignez les entreprises qui trouvent leurs chantiers de façades en quelques minutes avec FAÇADEO.</p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Link to="/register">
                     <Button size="lg" variant="default" className="h-14 px-10 text-lg rounded-full ">Essayer gratuitement (7 jours)</Button>
