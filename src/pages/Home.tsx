@@ -152,7 +152,7 @@ const HeroSection = () => {
                 </span>
               </h1>
 
-              <div className="mt-6 max-w-2xl space-y-1.5">
+              <div className="mt-6 max-w-1xl space-y-1.5">
                 <p className="text-[0.8rem] md:text-[0.9rem] text-slate-600 dark:text-slate-400 leading-snug">
                   Façade, peinture, ITE, menuiserie… Des chantiers adaptés à votre métier, autour de vous.
                 </p>
