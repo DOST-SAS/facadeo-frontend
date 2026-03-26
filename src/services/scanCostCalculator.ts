@@ -76,44 +76,43 @@ class ScanCostCalculatorService {
 
         try {
             const response = await SettingsServiceInstance.getSettings()
-            
-            if (response.data && response.data.length > 0) {
-                const settings = response.data[0] as Settings
-                const googlePlacesTarif = settings.googlePlacesKey?.tarif || DEFAULT_NEARBY_SEARCH_COST
-                const streetViewTarif = settings.streetViewKey?.tarif || DEFAULT_STREET_VIEW_COST
-                const geminiTarif = settings.geminiNanoKey?.tarif || DEFAULT_GEMINI_COST
-                
+
+            const rawData = response?.data
+            const settings: Settings | null = Array.isArray(rawData)
+                ? rawData[0]
+                : rawData
+
+            if (settings) {
+                const googlePlacesTarif =
+                    settings.googlePlacesKey?.tarif || DEFAULT_NEARBY_SEARCH_COST
+                const streetViewTarif =
+                    settings.streetViewKey?.tarif || DEFAULT_STREET_VIEW_COST
+                const geminiTarif =
+                    settings.geminiNanoKey?.tarif || DEFAULT_GEMINI_COST
+
                 this.config = {
                     googlePlacesTarif,
                     nearbySearchCostPerCall: googlePlacesTarif,
                     placeDetailsCostPerCall: DEFAULT_PLACE_DETAILS_COST,
                     streetViewCostPerCall: streetViewTarif,
                     geminiCostPerCall: geminiTarif,
-                    dollarsPerToken: DEFAULT_DOLLARS_PER_TOKEN
+                    dollarsPerToken: DEFAULT_DOLLARS_PER_TOKEN,
                 }
             } else {
-                // Fallback to defaults
-                this.config = {
-                    googlePlacesTarif: DEFAULT_NEARBY_SEARCH_COST,
-                    nearbySearchCostPerCall: DEFAULT_NEARBY_SEARCH_COST,
-                    placeDetailsCostPerCall: DEFAULT_PLACE_DETAILS_COST,
-                    streetViewCostPerCall: DEFAULT_STREET_VIEW_COST,
-                    geminiCostPerCall: DEFAULT_GEMINI_COST,
-                    dollarsPerToken: DEFAULT_DOLLARS_PER_TOKEN
-                }
+                throw new Error("No settings found")
             }
-            
+
             return this.config
         } catch (error) {
             console.error("Failed to load scan cost config:", error)
-            // Return defaults on error
+
             return {
                 googlePlacesTarif: DEFAULT_NEARBY_SEARCH_COST,
                 nearbySearchCostPerCall: DEFAULT_NEARBY_SEARCH_COST,
                 placeDetailsCostPerCall: DEFAULT_PLACE_DETAILS_COST,
                 streetViewCostPerCall: DEFAULT_STREET_VIEW_COST,
                 geminiCostPerCall: DEFAULT_GEMINI_COST,
-                dollarsPerToken: DEFAULT_DOLLARS_PER_TOKEN
+                dollarsPerToken: DEFAULT_DOLLARS_PER_TOKEN,
             }
         }
     }
