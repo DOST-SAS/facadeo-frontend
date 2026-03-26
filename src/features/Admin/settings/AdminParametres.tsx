@@ -59,7 +59,9 @@ export default function AdminParametres() {
                 const response = await SettingsServiceInstance.getSettings()
                 console.log("SETTINGS RESPONSE =", response)
 
-                const fetchedSettings = response?.data?.[0]
+                const fetchedSettings = Array.isArray(response?.data)
+                  ? response.data[0]
+                  : response?.data
                 console.log("FETCHED SETTINGS =", fetchedSettings)
 
                 if (fetchedSettings) {
@@ -81,6 +83,11 @@ export default function AdminParametres() {
     }, [])
 
     const handleUpdateGlobalSettings = async () => {
+
+        if (!settings.id) {
+                toast.error("Impossible de mettre à jour : identifiant des paramètres introuvable")
+                return
+        }
 
         try {
             setIsLoading(true)
