@@ -109,8 +109,14 @@ export default function CreateScan() {
                     // If no subscription record, try to find the free plan as default
                     const { data: plans } = await AbonnementServiceInstance.getAbonnement()
                     const freePlan = plans?.find((p: any) => p.type === 'free' || p.price_cents === 0)
-                    
-                    console.warn("No free plan found in database")
+                    if (freePlan) {
+                        console.log("Current plan (default free):", freePlan)
+                        setCurrentPlan(freePlan)
+                        setMaxRadius(freePlan.features?.find((f: any) => f.key === 'max_radius_m')?.value)
+                        setMAX_SCANS(freePlan.features?.find((f: any) => f.key === 'max_scans_per_month')?.value)
+                    } else {
+                        console.warn("No free plan found in database")
+                    }
                 }
             } catch (error) {
                 console.error('Error fetching current plan:', error)
