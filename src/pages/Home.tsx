@@ -132,13 +132,35 @@ const HeroSection = () => {
 
     return (
         <section className="relative h-screen pt-20 pb-10 md:pt-32 md:pb-32 overflow-hidden bg-transparent">
-          <div className="absolute inset-x-0 top-0 bottom-0 z-0 pointer-events-none overflow-hidden h-full w-full">
-            <Threads
-              amplitude={1}
-              distance={0.5}
-              enableMouseInteraction={false}
-            />
-          </div>
+            {/* Dynamic Background Grid */}
+            <div className="absolute inset-x-0 top-0 bottom-0 z-0 pointer-events-none overflow-hidden h-full w-full">
+                {/* Video Background */}
+                {theme === 'light' ? (
+                    <video
+                        key="light"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="absolute inset-0 w-full h-full object-cover z-0"
+                    >
+                        <source src="/video-hero-light.mp4" type="video/mp4" />
+                        Your browser does not support the video tag.
+                    </video>
+                ) : (
+                    <video
+                        key="dark"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="absolute inset-0 w-full h-full object-cover z-0"
+                    >
+                        <source src="/video-hero-dark.mp4" type="video/mp4" />
+                        Your browser does not support the video tag.
+                    </video>
+                )}
+            </div>
 
           <div className="absolute left-1/2 top-1/2 z-10 w-full -translate-x-1/2 -translate-y-1/2 px-4 md:px-6">
             <div className="mx-auto flex max-w-6xl flex-col items-center text-center uppercase">
