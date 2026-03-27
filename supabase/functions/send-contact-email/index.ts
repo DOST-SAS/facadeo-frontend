@@ -1,10 +1,11 @@
-// TODO: add this to supabase secrets
-// supabase secrets set BREVO_API_KEY=your_brevo_api_key
-// supabase secrets set BREVO_SENDER_EMAIL=contact@dost.pro
-// supabase secrets set BREVO_SENDER_NAME="DOST Contact"
-
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
+
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL")!,
+  Deno.env.get("SERVICE_ROLE_KEY")!
+);
 
 const jsonHeaders = {
   ...corsHeaders,
@@ -81,9 +82,16 @@ serve(async (req) => {
       return jsonResponse({ error: "Soumission trop rapide" }, 400);
     }
 
-    const brevoApiKey = Deno.env.get("BREVO_API_KEY");
-    const senderEmail = Deno.env.get("BREVO_SENDER_EMAIL");
-    const senderName = Deno.env.get("BREVO_SENDER_NAME") || "DOST Contact";
+    const { data: settings } = await supabase
+      .from("app_setting")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    const brevoApiKey = settings.BREVO_API_KEY;
+    const senderEmail = "contact@dost.pro";
+    const senderName = "DOST Contact";
 
     if (!brevoApiKey) {
       console.error("Missing BREVO_API_KEY");
@@ -109,8 +117,8 @@ serve(async (req) => {
         },
         to: [
           {
-            email: "contact@dost.pro",
-            name: "DOST Contact",
+            email: settings.emailNoReply?.email || senderEmail,
+            name: settings.emailNoReply?.name || "DOST Contact",
           },
         ],
         replyTo: {
