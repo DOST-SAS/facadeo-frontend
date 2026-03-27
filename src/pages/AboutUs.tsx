@@ -18,8 +18,10 @@ const AboutUs = () => {
 			<main className="relative flex-1 z-10 w-full">
 				<AboutHero />
 				<MissionSection />
-				<TeamSection />
 				<TechSection />
+				<TeamSection />
+				<VisionSection />
+				<WhySection />
 				<ContactSection />
 			</main>
 
@@ -69,8 +71,10 @@ const AboutHero = () => (
 		<h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-4 max-w-4xl text-slate-900 dark:text-white">
 			À propos de <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-400 to-accent">FAÇADEO</span>
 		</h1>
-		<p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mb-6 leading-relaxed">
-			Notre mission : révolutionner la prospection et la gestion des chantiers grâce à l’intelligence artificielle.
+		<p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-1xl mb-6 leading-relaxed">
+			FAÇADEO est né d’un constat simple : <br/>Trouver des chantiers et envoyer des devis ne devrait pas prendre des heures. <br/>
+			FAÇADEO aide les professionnels du bâtiment à détecter des opportunités autour d’eux
+			et à générer des devis rapidement, grâce à l’intelligence artificielle.
 		</p>
 	</section>
 )
@@ -83,18 +87,30 @@ const MissionSection = () => {
 					<div>
 						<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider mb-4">
 							<Star className="w-4 h-4" />
-							Notre mission
+							NOTRE HISTOIRE
 						</div>
 						<h2 className="text-3xl md:text-5xl font-bold mb-6">
-							Simplifier la vie des façadiers et artisans du bâtiment
+							FAÇADEO est né d’un constat simple
 						</h2>
 						<p className="text-slate-500 dark:text-slate-400 text-lg mb-4">
-						FAÇADEO est né d’un constat simple : la prospection et la gestion des devis prennent trop de temps et d’énergie aux professionnels du bâtiment. Notre équipe a donc conçu une plateforme qui automatise la détection des chantiers, la création de devis et le suivi client, pour que vous puissiez vous concentrer sur votre savoir-faire.
-					</p>
+						Dans le bâtiment, trouver des chantiers repose encore largement sur le bouche-à-oreille,
+						et la création de devis prend un temps considérable. <br/><br/>
+						Pendant ce temps, des opportunités existent partout… mais restent invisibles ou inexploitées.
+						Nous avons créé FAÇADEO pour changer ça.
+						</p>
+						<p className="text-slate-500 dark:text-slate-400 text-lg mb-4">
+						Notre objectif est simple :
+						donner aux artisans et aux entreprises du bâtiment des outils concrets
+						pour trouver plus de chantiers et gagner du temps au quotidien.
+						</p>
+						<p>
+						Avec FAÇADEO, vous pouvez :
+						</p>
 					<ul className="space-y-3 text-slate-700 dark:text-slate-300 font-medium">
-						<li className="flex items-center gap-2"><TrendingUp className="w-5 h-5 text-primary" /> Booster votre chiffre d’affaires</li>
-						<li className="flex items-center gap-2"><MapPin className="w-5 h-5 text-primary" /> Trouver des chantiers près de chez vous</li>
-						<li className="flex items-center gap-2"><Star className="w-5 h-5 text-primary" /> Gagner du temps au quotidien</li>
+						<li className="flex items-center gap-2"><Star className="w-5 h-5 text-primary" /> Détecter automatiquement des façades à rénover autour de vous.</li>
+						<li className="flex items-center gap-2"><Star className="w-5 h-5 text-primary" /> Estimer les travaux en quelques secondes.</li>
+						<li className="flex items-center gap-2"><Star className="w-5 h-5 text-primary" /> Générer des devis personnalisés avec vos propres prix. </li>
+						<li className="flex items-center gap-2"><Star className="w-5 h-5 text-primary" />Gagner du temps sur la prospection et la gestion commerciale. </li>
 					</ul>
 				</div>
 				<div className="flex justify-center">
@@ -105,16 +121,41 @@ const MissionSection = () => {
 	)
 }
 
+const TechSection = () => (
+	<section className="py-24 bg-white/[0.02] border-y border-white/5">
+		<div className="container px-4 md:px-6 mx-auto text-center">
+			<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-500 text-xs font-bold uppercase tracking-wider mb-4">
+				<Star className="w-4 h-4" />
+				NOTRE APPROCHE
+			</div>
+			<h2 className="text-3xl md:text-5xl font-bold mb-6">Des outils de pointe pour des résultats concrets</h2>
+			<p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-12">
+				Nous ne cherchons pas à créer un outil complexe,
+				mais un outil réellement utile sur le terrain.<br/> 
+
+				Chaque fonctionnalité est pensée pour résoudre un problème concret,
+				et permettre aux professionnels de gagner du temps et développer leur activité.
+			</p>
+			{/*<div className="flex flex-wrap justify-center items-center gap-10 md:gap-20 opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
+				<div className="flex items-center gap-2"><MapPin className="w-6 h-6" /><span className="font-bold text-lg">Google Maps</span></div>
+				<div className="flex items-center gap-2"><Star className="w-6 h-6" /><span className="font-bold text-lg">Gemini AI</span></div>
+				<div className="flex items-center gap-2"><TrendingUp className="w-6 h-6" /><span className="font-bold text-lg">Stripe</span></div>
+			</div>*/}
+		</div>
+	</section>
+)
+
 const TeamSection = () => (
 	<section className="py-24">
 		<div className="container px-4 md:px-6 mx-auto text-center">
 			<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-bold uppercase tracking-wider mb-4">
 				<Users className="w-4 h-4" />
-				Notre équipe
+				L’ÉQUIPE
 			</div>
 			<h2 className="text-3xl md:text-5xl font-bold mb-6">Des experts du bâtiment et de la tech</h2>
 			<p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-12">
-				FAÇADEO rassemble des professionnels du bâtiment, des ingénieurs IA et des passionnés de digital, tous animés par la volonté de moderniser le secteur.
+				FAÇADEO est construit par des profils issus du bâtiment et de la tech,
+				avec une obsession : créer des outils simples, efficaces et réellement utilisés sur le terrain.
 			</p>
 			<div className="flex flex-wrap justify-center gap-10 hidden">
 				{/* Replace with real team members */}
@@ -138,21 +179,65 @@ const TeamSection = () => (
 	</section>
 )
 
-const TechSection = () => (
+const VisionSection = () => (
 	<section className="py-24 bg-white/[0.02] border-y border-white/5">
 		<div className="container px-4 md:px-6 mx-auto text-center">
 			<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-500 text-xs font-bold uppercase tracking-wider mb-4">
 				<Star className="w-4 h-4" />
-				Nos technologies
+				VISION
 			</div>
-			<h2 className="text-3xl md:text-5xl font-bold mb-6">Des outils de pointe pour des résultats concrets</h2>
+			<h2 className="text-3xl md:text-5xl font-bold mb-6">Nous pensons que le bâtiment est un secteur immense,
+encore peu digitalisé, avec un potentiel énorme.</h2>
 			<p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-12">
-				Nous utilisons l’intelligence artificielle, la vision par ordinateur et les meilleures APIs du marché pour offrir une expérience fluide et performante à nos utilisateurs.
+				Notre ambition est de créer une nouvelle génération d’outils
+				qui permettent aux entreprises du bâtiment de travailler plus efficacement
+				et de développer leur activité plus rapidement.
 			</p>
-			<div className="flex flex-wrap justify-center items-center gap-10 md:gap-20 opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
-				<div className="flex items-center gap-2"><MapPin className="w-6 h-6" /><span className="font-bold text-lg">Google Maps</span></div>
-				<div className="flex items-center gap-2"><Star className="w-6 h-6" /><span className="font-bold text-lg">Gemini AI</span></div>
-				<div className="flex items-center gap-2"><TrendingUp className="w-6 h-6" /><span className="font-bold text-lg">Stripe</span></div>
+		</div>
+	</section>
+)
+
+const WhySection = () => (
+	<section className="py-24">
+		<div className="container px-4 md:px-6 mx-auto text-center">
+			<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-bold uppercase tracking-wider mb-4">
+				<Users className="w-4 h-4" />
+				Pourquoi on fait ça ?
+			</div>
+			<h2 className="text-3xl md:text-5xl font-bold mb-6">Nous sommes convaincus que le bâtiment mérite des outils modernes,
+				simples et efficaces.
+			</h2>
+			<p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-12">
+				Nous pensons que les professionnels du bâtiment devraient passer leur temps sur les chantiers,
+				pas à chercher des opportunités ou créer des devis.
+			</p>
+			<p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-12">
+				Aujourd’hui, trop de temps est perdu sur des tâches répétitives,
+				alors que des opportunités existent partout… mais restent inexploitées.
+			</p>
+			<p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-12">
+				FAÇADEO a été conçu pour changer ça.<br/>
+				Grâce à la data et à l’intelligence artificielle,
+				nous permettons de détecter des façades à rénover
+				et de générer des devis rapidement, pour vous aider à développer votre activité.
+			</p>
+			<div className="flex flex-wrap justify-center gap-10 hidden">
+				{/* Replace with real team members */}
+				<div className="flex flex-col items-center">
+					<img src="/assets/team1.jpg" alt="Fondateur" className="w-28 h-28 rounded-full object-cover mb-3 border-4 border-primary/30" />
+					<div className="font-bold">Hugo Martin</div>
+					<div className="text-slate-500 text-sm">Fondateur & CEO</div>
+				</div>
+				<div className="flex flex-col items-center">
+					<img src="/assets/team2.jpg" alt="CTO" className="w-28 h-28 rounded-full object-cover mb-3 border-4 border-primary/30" />
+					<div className="font-bold">Sarah Dupont</div>
+					<div className="text-slate-500 text-sm">CTO</div>
+				</div>
+				<div className="flex flex-col items-center">
+					<img src="/assets/team3.jpg" alt="IA Engineer" className="w-28 h-28 rounded-full object-cover mb-3 border-4 border-primary/30" />
+					<div className="font-bold">Mehdi Benali</div>
+					<div className="text-slate-500 text-sm">Ingénieur IA</div>
+				</div>
 			</div>
 		</div>
 	</section>
