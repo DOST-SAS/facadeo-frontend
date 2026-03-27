@@ -124,7 +124,7 @@ serve(async (req) => {
         replyTo: {
           email: cleanEmail,
         },
-        subject: `[Contact DOST] ${cleanSubject}`,
+        subject: `[Contact Facadeo] ${cleanSubject}`,
         textContent: [
           "Nouveau message depuis le formulaire de contact",
           "",
