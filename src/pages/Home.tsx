@@ -717,8 +717,8 @@ const Footer = () => (
             <div>
                 <h4 className="font-bold mb-4 text-white">Produit</h4>
                 <ul className="space-y-2 text-slate-500">
-                    <li><Link to="#features" className="hover:text-primary">Fonctionnalités</Link></li>
-                    <li><Link to="#pricing" className="hover:text-primary">Tarifs</Link></li>
+                    <li><a href="#features" className="hover:text-primary">Fonctionnalités</a></li>
+                    <li><a href="#pricing" className="hover:text-primary">Tarifs</a></li>
                     <li><Link to="/enterprise" className="hover:text-primary">Enterprise</Link></li>
                 </ul>
             </div>
