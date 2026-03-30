@@ -181,6 +181,8 @@ export const GOOGLE_PLACE_TYPES = [
   { value: "university", label: "Université" },
   { value: "veterinary_care", label: "Vétérinaire" },
   { value: "zoo", label: "Zoo" },
+  // --- Construction Worker Business Type ---
+  { value: "painter", label: "Peintre" },
 ];
 
 export const GOOGLE_PLACE_TYPES_I18N = [
