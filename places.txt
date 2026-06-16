@@ -1,0 +1,601 @@
+import { z } from "zod"
+import { GOOGLE_PLACE_TYPES } from "@/constants"
+
+// Validation schemas
+export const FacadeDetectionInputSchema = z.object({
+  coordinates: z.object({
+    lat: z.number().min(-90).max(90, "Latitude must be between -90 and 90"),
+    lng: z.number().min(-180).max(180, "Longitude must be between -180 and 180")
+  }),
+  radius: z.number().min(100, "Radius must be at least 100m").max(10000, "Radius cannot exceed 10km"),
+  types: z.array(z.string()).optional()
+})
+
+export type FacadeDetectionInput = z.infer<typeof FacadeDetectionInputSchema>
+
+// Place interfaces - using Google Maps JS SDK types
+export interface GooglePlace {
+  place_id: string
+  name: string
+  vicinity: string
+  geometry: {
+    location: {
+      lat: number
+      lng: number
+    }
+  }
+  types: string[]
+  business_status?: string
+  rating?: number
+  user_ratings_total?: number
+  price_level?: number
+  photos?: Array<{
+    photo_reference: string
+    height: number
+    width: number
+  }>
+}
+
+// Places API (New) v1 response types
+interface PlacesV1Photo {
+  name: string
+  widthPx: number
+  heightPx: number
+}
+
+interface PlacesV1Location {
+  latitude: number
+  longitude: number
+}
+
+interface PlacesV1DisplayName {
+  text: string
+  languageCode?: string
+}
+
+interface PlacesV1Place {
+  id: string
+  displayName?: PlacesV1DisplayName
+  formattedAddress?: string
+  location?: PlacesV1Location
+  types?: string[]
+  businessStatus?: string
+  rating?: number
+  userRatingCount?: number
+  priceLevel?: string
+  photos?: PlacesV1Photo[]
+}
+
+interface PlacesV1SearchResponse {
+  places?: PlacesV1Place[]
+  nextPageToken?: string
+}
+
+export interface DetectedFacade {
+  id: string
+  name: string
+  address: string
+  coordinates: {
+    lat: number
+    lng: number
+  }
+  types: string[]
+  businessStatus?: string
+  rating?: number
+  userRatingsTotal?: number
+  priceLevel?: number
+  photoReference?: string
+  distance?: number
+  // Additional fields from Place Details API
+  formatted_address?: string
+  formatted_phone_number?: string
+  international_phone_number?: string
+  website?: string
+}
+
+export interface FacadeDetectionResult {
+  facades: DetectedFacade[]
+  totalFound: number
+  estimatedCost: number
+  searchRadius: number
+  searchCenter: {
+    lat: number
+    lng: number
+  }
+}
+
+export interface FacadeDetectionError {
+  code: 'VALIDATION_ERROR' | 'API_ERROR' | 'QUOTA_EXCEEDED' | 'NO_RESULTS' | 'NETWORK_ERROR'
+  message: string
+  details?: unknown
+}
+
+export class PlacesService {
+  private static readonly GOOGLE_PLACES_API_KEY = import.meta.env.VITE_GOOGLE_MAP_PLACES_API_KEY
+  private static readonly COST_PER_FACADE = 2
+  private static readonly BASE_COST = 5
+
+  /**
+   * Detect facades within a radius around given coordinates
+   */
+  static async detectFacades(input: FacadeDetectionInput): Promise<FacadeDetectionResult> {
+    // Validate input
+    const validationResult = FacadeDetectionInputSchema.safeParse(input)
+    if (!validationResult.success) {
+      throw {
+        code: 'VALIDATION_ERROR',
+        message: 'Invalid input parameters',
+        details: validationResult.error.issues
+      } as FacadeDetectionError
+    }
+
+    const { coordinates, radius, types } = validationResult.data
+
+    try {
+      // Fetch places using Google Maps JS SDK
+      const places = await this.fetchNearbyPlaces(coordinates, radius, types)
+      
+      // Process and filter places - pass radius and types to ensure only relevant places are included
+      const facades = this.processPlaces(places, coordinates, radius, types)
+      
+      // Enrich facades with detailed information (phone, website, etc.)
+      const enrichedFacades = await this.enrichFacadesWithDetails(facades)
+      
+      // Calculate cost
+      const estimatedCost = this.calculateCost(enrichedFacades.length, radius)
+
+      return {
+        facades: enrichedFacades,
+        totalFound: enrichedFacades.length,
+        estimatedCost,
+        searchRadius: radius,
+        searchCenter: coordinates
+      }
+    } catch (error) {
+      if (error && typeof error === 'object' && 'code' in error) {
+        throw error as FacadeDetectionError
+      }
+      
+      console.error('Unexpected error in facade detection:', error)
+      throw {
+        code: 'API_ERROR',
+        message: 'An unexpected error occurred during facade detection',
+        details: error
+      } as FacadeDetectionError
+    }
+  }
+
+  /**
+   * Fetch nearby places using Google Places API (New) v1 - supports multiple types in one request
+   */
+  private static async fetchNearbyPlaces(
+    coordinates: { lat: number; lng: number }, 
+    radius: number,
+    types?: string[]
+  ): Promise<GooglePlace[]> {
+    if (!this.GOOGLE_PLACES_API_KEY) {
+      throw {
+        code: 'API_ERROR',
+        message: 'Google Places API key is not configured'
+      } as FacadeDetectionError
+    }
+
+    const allPlaces: GooglePlace[] = []
+    let nextPageToken: string | null = null
+    
+    // Prepare included types - if none selected, search for all establishments
+    const includedTypes = types && types.length > 0 ? types : undefined
+
+    console.log(`[API REQUEST] Fetching places with types: ${includedTypes?.join(', ') || 'all establishments'}`)
+
+    do {
+      try {
+        // Build request body for Places API (New) v1
+        const requestBody: {
+          includedTypes?: string[]
+          maxResultCount: number
+          locationRestriction: {
+            circle: {
+              center: { latitude: number; longitude: number }
+              radius: number
+            }
+          }
+          pageToken?: string
+        } = {
+          maxResultCount: 20, // Max per request
+          locationRestriction: {
+            circle: {
+              center: {
+                latitude: coordinates.lat,
+                longitude: coordinates.lng
+              },
+              radius: radius
+            }
+          }
+        }
+
+        // Add types if specified
+        if (includedTypes && includedTypes.length > 0) {
+          requestBody.includedTypes = includedTypes
+        }
+
+        // Add page token for pagination
+        if (nextPageToken) {
+          requestBody.pageToken = nextPageToken
+        }
+
+        // Make request to Places API (New) v1
+        const response = await fetch('https://places.googleapis.com/v1/places:searchNearby', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Goog-Api-Key': this.GOOGLE_PLACES_API_KEY,
+            'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.location,places.types,places.businessStatus,places.rating,places.userRatingCount,places.priceLevel,places.photos,nextPageToken'
+          },
+          body: JSON.stringify(requestBody)
+        })
+
+        if (!response.ok) {
+          if (response.status === 429) {
+            throw {
+              code: 'QUOTA_EXCEEDED',
+              message: 'Google Places API quota exceeded. Please try again later.'
+            } as FacadeDetectionError
+          }
+          
+          const errorData = await response.json().catch(() => ({}))
+          throw {
+            code: 'API_ERROR',
+            message: `Google Places API error: ${response.status} - ${errorData.error?.message || response.statusText}`
+          } as FacadeDetectionError
+        }
+
+        const data: PlacesV1SearchResponse = await response.json()
+        
+        // Transform Places API (New) v1 response to our GooglePlace format
+        if (data.places && data.places.length > 0) {
+          const transformedPlaces = data.places.map((place) => this.transformPlacesV1Result(place))
+          allPlaces.push(...transformedPlaces)
+          console.log(`[API RESPONSE] Received ${data.places.length} places (total: ${allPlaces.length})`)
+        }
+
+        // Check for next page
+        nextPageToken = data.nextPageToken || null
+        
+        // Stop if we have enough results or no more pages
+        if (allPlaces.length >= 60 || !nextPageToken) {
+          break
+        }
+
+        // Add delay before next page request to avoid rate limiting
+        if (nextPageToken) {
+          await new Promise(resolve => setTimeout(resolve, 2000))
+        }
+
+      } catch (error) {
+        if (error && typeof error === 'object' && 'code' in error) {
+          throw error
+        }
+        
+        throw {
+          code: 'NETWORK_ERROR',
+          message: 'Failed to fetch places from Google Places API',
+          details: error
+        } as FacadeDetectionError
+      }
+    } while (nextPageToken && allPlaces.length < 60)
+
+    console.log(`[API COMPLETE] Total places fetched: ${allPlaces.length}`)
+    return allPlaces
+  }
+
+  /**
+   * Transform Places API (New) v1 result to our GooglePlace format
+   */
+  private static transformPlacesV1Result(place: PlacesV1Place): GooglePlace {
+    const lat = place.location?.latitude || 0
+    const lng = place.location?.longitude || 0
+
+    const transformedPlace: GooglePlace = {
+      place_id: place.id || '',
+      name: place.displayName?.text || '',
+      vicinity: place.formattedAddress || '',
+      geometry: {
+        location: {
+          lat,
+          lng
+        }
+      },
+      types: place.types || [],
+      business_status: place.businessStatus,
+      rating: place.rating,
+      user_ratings_total: place.userRatingCount,
+      price_level: place.priceLevel ? parseInt(place.priceLevel) : undefined,
+      photos: place.photos?.map((photo) => ({
+        photo_reference: photo.name, // Photo resource name for v1 API
+        height: photo.heightPx,
+        width: photo.widthPx
+      }))
+    }
+
+    console.log(`[RAW DATA V1] Place: ${transformedPlace.name}`)
+    console.log(`  place_id: ${transformedPlace.place_id}`)
+    console.log(`  coordinates: { lat: ${transformedPlace.geometry.location.lat}, lng: ${transformedPlace.geometry.location.lng} }`)
+    console.log(`  address: ${transformedPlace.vicinity}`)
+    console.log(`  types: [${transformedPlace.types.join(', ')}]`)
+    console.log('---')
+
+    return transformedPlace
+  }
+
+  /**
+   * Process and filter places to create facade objects
+   */
+  private static processPlaces(
+    places: GooglePlace[], 
+    searchCenter: { lat: number; lng: number },
+    radius: number,
+    types?: string[]
+  ): DetectedFacade[] {
+    console.log('===========================================')
+    console.log('=== PROCESSING PLACES - INPUT ===')
+    console.log(`Total places received: ${places.length}`)
+    console.log(`Search radius: ${radius}m`)
+    console.log(`Selected types: ${types?.join(', ') || 'all'}`)
+    console.log('===========================================')
+    
+    // Remove duplicates by place_id
+    const uniquePlaces = places.filter((place, index, self) => 
+      index === self.findIndex(p => p.place_id === place.place_id)
+    )
+
+    console.log(`After deduplication: ${uniquePlaces.length} unique places`)
+
+    // Filter and transform places
+    const facades: DetectedFacade[] = uniquePlaces
+      .filter(place => this.isRelevantBusiness(place, types))
+      .map(place => this.transformToFacade(place, searchCenter))
+      .filter(facade => facade !== null) as DetectedFacade[]
+
+    console.log(`After filtering and transformation: ${facades.length} facades`)
+    
+    // Filter facades to only include those within the specified radius
+    const facadesWithinRadius = facades.filter(facade => {
+      const isWithinRadius = (facade.distance || 0) <= radius
+      if (!isWithinRadius) {
+        console.log(`[FILTERED OUT] ${facade.name} - distance: ${facade.distance?.toFixed(2)}m > radius: ${radius}m`)
+      }
+      return isWithinRadius
+    })
+
+    console.log(`After radius filtering: ${facadesWithinRadius.length} facades within ${radius}m`)
+    
+    // Sort by distance (closest first)
+    const sortedFacades = facadesWithinRadius.sort((a, b) => (a.distance || 0) - (b.distance || 0))
+    
+    console.log('===========================================')
+    console.log('=== FINAL PROCESSED FACADES ===')
+    sortedFacades.forEach((facade, idx) => {
+      console.log(`[${idx}] ${facade.name}`)
+      console.log(`    RAW coordinates object:`, facade.coordinates)
+      console.log(`    lat: ${facade.coordinates.lat} (type: ${typeof facade.coordinates.lat})`)
+      console.log(`    lng: ${facade.coordinates.lng} (type: ${typeof facade.coordinates.lng})`)
+    })
+    console.log('===========================================')
+    
+    return sortedFacades
+  }
+
+  /**
+   * Check if a place is a relevant business
+   */
+  private static isRelevantBusiness(place: GooglePlace, selectedTypes?: string[]): boolean {
+    // Filter out places that are not active businesses
+    if (place.business_status === 'CLOSED_PERMANENTLY') {
+      return false
+    }
+
+    // If specific types are selected, check if place matches any of them
+    if (selectedTypes && selectedTypes.length > 0) {
+      const matchesSelectedType = place.types.some(type => 
+        selectedTypes.includes(type)
+      )
+      
+      if (!matchesSelectedType) {
+        return false
+      }
+    } else {
+      // If no specific types selected, check if place has relevant business types
+      const relevantTypes = place.types.some(type => 
+        GOOGLE_PLACE_TYPES.some(gpt => gpt.value === type) || 
+        type.includes('store') || 
+        type.includes('shop') ||
+        type === 'establishment'
+      )
+
+      if (!relevantTypes) {
+        return false
+      }
+    }
+
+    return Boolean(place.name) && Boolean(place.vicinity)
+  }
+
+  /**
+   * Transform Google Place to DetectedFacade
+   */
+  private static transformToFacade(
+    place: GooglePlace, 
+    searchCenter: { lat: number; lng: number }
+  ): DetectedFacade | null {
+    try {
+      const placeCoords = place.geometry.location
+      
+      // Validate coordinates - don't use places with invalid coordinates
+      if (!placeCoords || (placeCoords.lat === 0 && placeCoords.lng === 0)) {
+        console.warn(`[transformToFacade] Skipping ${place.name} - invalid coordinates`)
+        return null
+      }
+      
+      const distance = this.calculateDistance(
+        searchCenter,
+        placeCoords
+      )
+
+      const facade = {
+        id: place.place_id,
+        name: place.name,
+        address: place.vicinity,
+        coordinates: {
+          lat: placeCoords.lat,
+          lng: placeCoords.lng
+        },
+        types: place.types,
+        businessStatus: place.business_status,
+        rating: place.rating,
+        userRatingsTotal: place.user_ratings_total,
+        priceLevel: place.price_level,
+        photoReference: place.photos?.[0]?.photo_reference,
+        distance
+      }
+      
+      // Log each facade with its own coordinates after transformation
+      console.log(`[EXTRACTED DATA] Facade: ${facade.name}`)
+      console.log(`  id: ${facade.id}`)
+      console.log(`  coordinates: { lat: ${facade.coordinates.lat}, lng: ${facade.coordinates.lng} }`)
+      console.log(`  address: ${facade.address}`)
+      console.log(`  types: [${facade.types.join(', ')}]`)
+      console.log(`  distance: ${facade.distance?.toFixed(2)}m`)
+      console.log('---')
+      
+      return facade
+    } catch (error) {
+      console.warn('Failed to transform place to facade:', place.place_id, error)
+      return null
+    }
+  }
+
+  /**
+   * Calculate distance between two coordinates in meters
+   */
+  private static calculateDistance(
+    point1: { lat: number; lng: number },
+    point2: { lat: number; lng: number }
+  ): number {
+    const R = 6371e3 // Earth's radius in meters
+    const φ1 = point1.lat * Math.PI / 180
+    const φ2 = point2.lat * Math.PI / 180
+    const Δφ = (point2.lat - point1.lat) * Math.PI / 180
+    const Δλ = (point2.lng - point1.lng) * Math.PI / 180
+
+    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ/2) * Math.sin(Δλ/2)
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+
+    return R * c
+  }
+
+  /**
+   * Calculate estimated cost for facade detection
+   */
+  private static calculateCost(facadeCount: number, radius: number): number {
+    const radiusFactor = Math.ceil(radius / 1000) // Cost increases with radius
+    return this.BASE_COST + (facadeCount * this.COST_PER_FACADE) + radiusFactor
+  }
+
+  /**
+   * Fetch detailed information for a single place using Places API (New) v1
+   */
+  static async fetchPlaceDetails(placeId: string): Promise<{
+    formatted_address?: string
+    formatted_phone_number?: string
+    international_phone_number?: string
+    website?: string
+  }> {
+    if (!this.GOOGLE_PLACES_API_KEY) {
+      return {}
+    }
+
+    try {
+      const response = await fetch(`https://places.googleapis.com/v1/${placeId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Goog-Api-Key': this.GOOGLE_PLACES_API_KEY,
+          'X-Goog-FieldMask': 'formattedAddress,nationalPhoneNumber,internationalPhoneNumber,websiteUri'
+        }
+      })
+
+      if (!response.ok) {
+        console.warn(`Failed to fetch details for ${placeId}: ${response.status}`)
+        return {}
+      }
+
+      const data = await response.json()
+      
+      return {
+        formatted_address: data.formattedAddress,
+        formatted_phone_number: data.nationalPhoneNumber,
+        international_phone_number: data.internationalPhoneNumber,
+        website: data.websiteUri
+      }
+    } catch (error) {
+      console.warn(`Error fetching details for ${placeId}:`, error)
+      return {}
+    }
+  }
+
+  /**
+   * Enrich facades with detailed information from Place Details API
+   * This fetches additional fields like phone numbers and website
+   */
+  static async enrichFacadesWithDetails(facades: DetectedFacade[]): Promise<DetectedFacade[]> {
+    console.log(`[ENRICHING] Fetching details for ${facades.length} facades...`)
+    
+    // Fetch details for all facades in parallel with rate limiting
+    const enrichedFacades = await Promise.all(
+      facades.map(async (facade, index) => {
+        // Add small delay to avoid hitting rate limits (100ms between requests)
+        await new Promise(resolve => setTimeout(resolve, index * 100))
+        
+        try {
+          const details = await this.fetchPlaceDetails(facade.id)
+          console.log(`[ENRICHED] ${facade.name}:`, details)
+          
+          return {
+            ...facade,
+            formatted_address: details.formatted_address,
+            formatted_phone_number: details.formatted_phone_number,
+            international_phone_number: details.international_phone_number,
+            website: details.website
+          }
+        } catch (error) {
+          console.warn(`Failed to fetch details for ${facade.name}:`, error)
+          return facade
+        }
+      })
+    )
+
+    return enrichedFacades
+  }
+
+  /**
+   * Get photo URL for a place using Places API (New) v1
+   * photoReference is the photo resource name from the API
+   */
+  static getPhotoUrl(photoReference: string, maxWidth: number = 400): string {
+    if (!photoReference || !this.GOOGLE_PLACES_API_KEY) {
+      return ''
+    }
+
+    // If it's already a full URL, return as-is
+    if (photoReference.startsWith('http')) {
+      return photoReference
+    }
+
+    // For Places API (New) v1, use the photo resource name
+    // Format: https://places.googleapis.com/v1/{photoReference}/media?maxWidthPx={maxWidth}&key={API_KEY}
+    return `https://places.googleapis.com/v1/${photoReference}/media?maxWidthPx=${maxWidth}&key=${this.GOOGLE_PLACES_API_KEY}`
+  }
+}
